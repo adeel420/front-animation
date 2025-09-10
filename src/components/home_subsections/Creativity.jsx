@@ -78,8 +78,8 @@ const Creativity = () => {
 
       {/* Droplet Canvas */}
       <div
-        className="absolute bottom-30 left-0 w-[50%] h-[30vh] 
-             lg:top-0 lg:right-0 lg:left-auto lg:bottom-30 lg:w-[60%] lg:h-full z-0"
+        className="absolute bottom-30 left-0 w-[100%] h-[30vh] 
+             lg:top-0 lg:right-0 lg:left-auto lg:bottom-30 lg:w-[90%] lg:h-full z-0"
       >
         <DropletCanvas />
       </div>
