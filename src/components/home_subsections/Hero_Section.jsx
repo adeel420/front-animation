@@ -22,7 +22,6 @@ const Hero = () => {
       // Mobile-friendly spacing - add proper gap between words
       const spacing = isMobile ? 85 : 250;
 
-      // Reset
       gsap.set([wiseRef.current, rootreeRef.current], { clearProps: "all" });
 
       // Initial positions - single line on mobile
@@ -43,7 +42,7 @@ const Hero = () => {
           trigger: heroRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 2,
+          scrub: 0.3, // smooth scroll scrub
           pin: true,
         },
       });
@@ -51,36 +50,52 @@ const Hero = () => {
       scrollTl
         // Stage 1: WISE + ROOTREE
         .to(wiseRef.current, {
-          x: isMobile ? -ww / 2 + 40 : -ww / 2 + 40, // increased left margin for mobile
-          y: isMobile ? -wh / 2 + 80 : -wh / 2 + 80, // moved down more on mobile
+          x: isMobile ? -ww / 2 + 40 : -ww / 2 + 40,
+          y: isMobile ? -wh / 2 + 80 : -wh / 2 + 80,
           fontSize: isMobile ? "1rem" : "2rem",
-          duration: 2,
+          duration: 16, // was 2 → now 8x slower
           ease: "power2.out",
         })
         .to(
           rootreeRef.current,
           {
-            x: isMobile ? ww / 2 - 120 : ww / 2 - 200, // more gap from right edge on mobile
-            y: isMobile ? wh / 2 - 80 : wh / 2 - 100, // adjusted bottom position
+            x: isMobile ? ww / 2 - 120 : ww / 2 - 200,
+            y: isMobile ? wh / 2 - 80 : wh / 2 - 100,
             fontSize: isMobile ? "1rem" : "2rem",
-            duration: 2,
+            duration: 16, // was 2 → now 8x slower
             ease: "power2.out",
           },
           "<"
         )
-        // Stage 2: Heading
-        .to(headingRef.current, { opacity: 1, duration: 1 })
+        // Stage 2: Heading - Made smoother with power1.out ease
+        .to(headingRef.current, { opacity: 1, duration: 5 }) // thoda visible rakha
         .fromTo(
           headingRef.current,
           { x: ww },
-          { x: 0, duration: 3, ease: "power2.out" }
+          { x: 0, duration: 24, ease: "power1.out" } // changed to power1.out for smoother movement
         )
-        .to(headingRef.current, { x: -ww, duration: 3 })
-        // Stage 3: Cards
-        .fromTo(cardsRef.current, { x: ww }, { x: 0, duration: 3 })
-        .to(cardsRef.current, { x: -ww * 0.4, duration: 3 })
-        .to(cardsRef.current, { x: -ww * 0.8, duration: 3 })
-        .to(cardsRef.current, { x: -ww * 1.2, duration: 3 });
+        .to(headingRef.current, { x: -ww, duration: 24, ease: "power1.out" }) // added smooth ease
+        // Stage 3: Cards - Made 5 times slower with smooth easing
+        .fromTo(
+          cardsRef.current,
+          { x: ww },
+          { x: 0, duration: 120, ease: "power1.out" }
+        ) // added smooth ease
+        .to(cardsRef.current, {
+          x: -ww * 0.4,
+          duration: 120,
+          ease: "power1.out",
+        }) // added smooth ease
+        .to(cardsRef.current, {
+          x: -ww * 0.8,
+          duration: 120,
+          ease: "power1.out",
+        }) // added smooth ease
+        .to(cardsRef.current, {
+          x: -ww * 1.2,
+          duration: 120,
+          ease: "power1.out",
+        }); // added smooth ease
     };
 
     updateAnimations();
@@ -102,7 +117,7 @@ const Hero = () => {
     <div
       ref={heroRef}
       className="relative overflow-hidden"
-      style={{ height: "120vh" }} // increased height for slower scroll
+      style={{ height: "300vh" }} // increased from 120vh to 300vh for more scroll distance
     >
       <div className="sticky top-0 h-screen flex items-center justify-center text-white bg-black">
         {/* Background */}

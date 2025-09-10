@@ -62,14 +62,15 @@ const Vision = () => {
   return (
     <div className="w-screen overflow-x-hidden">
       <div ref={containerRef} className="h-screen flex">
-        {/* 1st Section */}
-        <div className="horizontal-section flex-shrink-0 w-screen h-screen relative">
-          <img
-            src={assets.creativityBg}
-            alt="creativity"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center gap-2 sm:gap-4 px-4">
+        <div
+          className="horizontal-section flex-shrink-0 w-[200vw] h-screen relative flex"
+          style={{
+            background:
+              "linear-gradient(90deg,rgba(109, 99, 160, 1) 0%, rgba(72, 45, 90, 1) 50%, rgba(0, 0, 0, 1) 100%)",
+          }}
+        >
+          {/* First Section */}
+          <div className="w-screen h-screen flex flex-col items-center justify-center gap-4 text-white text-center px-6">
             <span className="text-base sm:text-xl md:text-3xl lg:text-5xl font-bold leading-snug">
               디자인은 메세지를 담고
             </span>
@@ -80,17 +81,9 @@ const Vision = () => {
               마음을 움직입니다
             </span>
           </div>
-        </div>
 
-        {/* 2nd Section */}
-        <div
-          className="horizontal-section flex-shrink-0 w-screen h-screen relative flex items-center justify-center"
-          style={{
-            background:
-              "linear-gradient(90deg,rgba(109, 99, 160, 1) 0%, rgba(72, 45, 90, 1) 50%, rgba(29, 32, 113, 1) 100%)",
-          }}
-        >
-          <div className="flex flex-col items-center justify-center text-white text-center px-4 sm:px-8">
+          {/* Second Section */}
+          <div className="w-screen h-screen flex flex-col items-center justify-center gap-4 text-white text-center px-6">
             <span className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold">
               PLANT YOUR VISION
             </span>

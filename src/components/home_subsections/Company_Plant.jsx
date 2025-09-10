@@ -7,41 +7,60 @@ const Company_Plant = () => {
     <div>
       <div className="flex flex-col text-white px-4 xs:px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20">
         <div className="text-white flex flex-col md:flex-row gap-4 xs:gap-6">
+          {/* First block */}
           <div className="flex justify-between w-full border-t pt-6 pb-4 xs:py-8 md:w-1/2 md:pr-3 lg:pr-6">
-            <div className="flex flex-col gap-0.5 xs:gap-1">
+            <div className="flex flex-col gap-0.5 xs:gap-1 flex-1">
               <p className="text-xs xs:text-sm">회사소개서 다운로드</p>
-              <h1 className="text-lg xs:text-xl sm:text-2xl font-semibold">
-                COMPANY
-              </h1>
+
+              {/* Full width select */}
+              <select className="w-full text-lg xs:text-xl sm:text-2xl font-semibold bg-transparent focus:outline-none appearance-none text-white [&>option]:text-black [&>option]:text-sm">
+                <option>COMPANY 1</option>
+                <option>COMPANY 2</option>
+                <option>COMPANY 3</option>
+              </select>
+
               <p className="text-xs xs:text-sm">프로젝트 설명입니다.</p>
             </div>
-            <div className="text-2xl xs:text-3xl">
+            <div className="text-2xl xs:text-3xl flex items-center pl-2">
               <IoIosArrowRoundDown />
             </div>
           </div>
 
-          <div className="flex justify-between w-full border-t pt-6 pb-4 xs:py-8 md:w-1/2 md:pl-3 lg:pl-6 ">
-            <div className="flex flex-col gap-0.5 xs:gap-1">
+          {/* Second block */}
+          <div className="flex justify-between w-full border-t pt-6 pb-4 xs:py-8 md:w-1/2 md:pl-3 lg:pl-6">
+            <div className="flex flex-col gap-0.5 xs:gap-1 flex-1">
               <p className="text-xs xs:text-sm">회사소개서 다운로드</p>
-              <h1 className="text-lg xs:text-xl sm:text-2xl font-semibold">
-                COMPANY
-              </h1>
+
+              {/* Full width select */}
+              <select className="w-full text-lg xs:text-xl sm:text-2xl font-semibold bg-transparent focus:outline-none appearance-none text-white [&>option]:text-black [&>option]:text-sm">
+                <option>COMPANY A</option>
+                <option>COMPANY B</option>
+                <option>COMPANY C</option>
+              </select>
+
               <p className="text-xs xs:text-sm">프로젝트 설명입니다.</p>
             </div>
-            <div className="text-2xl xs:text-3xl">
+            <div className="text-2xl xs:text-3xl flex items-center pl-2">
               <IoIosArrowRoundDown />
             </div>
           </div>
         </div>
+
+        {/* Third block */}
         <div className="flex justify-between w-full border-y py-6 xs:py-8">
-          <div className="flex flex-col gap-0.5 xs:gap-1">
+          <div className="flex flex-col gap-0.5 xs:gap-1 flex-1">
             <p className="text-xs xs:text-sm">회사소개서 다운로드</p>
-            <h1 className="text-lg xs:text-xl sm:text-2xl font-semibold">
-              COMPANY
-            </h1>
+
+            {/* Full width select */}
+            <select className="w-full text-lg xs:text-xl sm:text-2xl font-semibold bg-transparent focus:outline-none appearance-none text-white [&>option]:text-black [&>option]:text-sm">
+              <option>COMPANY X</option>
+              <option>COMPANY Y</option>
+              <option>COMPANY Z</option>
+            </select>
+
             <p className="text-xs xs:text-sm">프로젝트 설명입니다.</p>
           </div>
-          <div className="text-2xl xs:text-3xl">
+          <div className="text-2xl xs:text-3xl flex items-center pl-2">
             <IoIosArrowRoundDown />
           </div>
         </div>
