@@ -52,7 +52,7 @@ const Hero = () => {
         // Stage 1: WISE + ROOTREE
         .to(wiseRef.current, {
           x: isMobile ? -ww / 2 + 40 : -ww / 2 + 40, // increased left margin for mobile
-          y: isMobile ? -wh / 2 + 120 : -wh / 2 + 80, // moved down more on mobile
+          y: isMobile ? -wh / 2 + 80 : -wh / 2 + 80, // moved down more on mobile
           fontSize: isMobile ? "1rem" : "2rem",
           duration: 2,
           ease: "power2.out",
@@ -154,7 +154,7 @@ const Hero = () => {
             <div
               key={index}
               className="project-card rounded-2xl p-3 sm:p-4 shadow-lg 
-                     h-[140px] w-[160px] sm:h-[220px] sm:w-[240px] 
+                     h-[240px] w-[260px] sm:h-[220px] sm:w-[240px] 
                      md:h-[260px] md:w-[300px] 
                      lg:h-[300px] lg:w-[360px] 
                      bg-gray-800 flex-shrink-0"

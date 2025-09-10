@@ -14,13 +14,11 @@ const Vision = () => {
     const container = containerRef.current;
     const sections = gsap.utils.toArray(".horizontal-section");
 
-    // Equal widths for each section
-    let totalWidth = 0;
-    sections.forEach(() => {
-      totalWidth += window.innerWidth;
+    // Set width of the container to total width of sections
+    gsap.set(container, {
+      width: sections.length * window.innerWidth,
+      display: "flex",
     });
-
-    gsap.set(container, { width: totalWidth + "px", display: "flex" });
 
     // Horizontal scroll effect
     gsap.to(container, {
@@ -36,17 +34,16 @@ const Vision = () => {
       },
     });
 
-    // Subtle movement for 3rd section cards
-    const thirdSectionCards = thirdCardsRef.current;
-    if (thirdSectionCards) {
+    // Subtle horizontal movement for 3rd section cards
+    if (thirdCardsRef.current) {
       gsap.fromTo(
-        thirdSectionCards,
+        thirdCardsRef.current,
         { x: 0 },
         {
           x: -50,
           ease: "none",
           scrollTrigger: {
-            trigger: thirdSectionCards.parentNode,
+            trigger: thirdCardsRef.current.parentNode,
             start: "top center",
             end: "bottom center",
             scrub: 1,
@@ -56,6 +53,7 @@ const Vision = () => {
       );
     }
 
+    // Clean up ScrollTriggers on unmount
     return () => {
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
@@ -88,9 +86,8 @@ const Vision = () => {
         <div
           className="horizontal-section flex-shrink-0 w-screen h-screen relative flex items-center justify-center"
           style={{
-            backgroundImage: `url(${assets.creativityBg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            background:
+              "linear-gradient(90deg,rgba(109, 99, 160, 1) 0%, rgba(72, 45, 90, 1) 50%, rgba(29, 32, 113, 1) 100%)",
           }}
         >
           <div className="flex flex-col items-center justify-center text-white text-center px-4 sm:px-8">
@@ -107,7 +104,6 @@ const Vision = () => {
         <div className="ml-12 md:ml-0 horizontal-section flex-shrink-0 h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-12 lg:px-20 relative bg-black">
           <div
             className="flex gap-4 sm:gap-6 md:gap-8 overflow-x-auto max-w-full pb-6 scrollbar-thin scrollbar-thumb-gray-600"
-            id="third-section-cards"
             ref={thirdCardsRef}
           >
             {visionData.map((data) => (
@@ -118,7 +114,7 @@ const Vision = () => {
                            bg-gradient-to-b from-gray-900 to-black 
                            rounded-2xl flex flex-col items-center justify-center 
                            p-3 sm:p-4 md:p-6 
-                           text-white shadow-lg"
+                           text-white shadow-lg flex-shrink-0"
               >
                 <h1 className="font-bold text-xs sm:text-sm md:text-base lg:text-lg text-center mb-2">
                   {data.title}

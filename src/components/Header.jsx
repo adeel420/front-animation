@@ -44,7 +44,7 @@ const Header = () => {
 
       {/* Mobile Menu Button */}
       <button className="md:hidden text-2xl" onClick={() => setIsOpen(!isOpen)}>
-        ☰
+        {isOpen ? "X" : "☰"}
       </button>
 
       {/* Mobile Menu (Slide Down) */}
