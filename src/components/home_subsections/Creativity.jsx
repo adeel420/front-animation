@@ -5,6 +5,8 @@ import SplitType from "split-type";
 import Lenis from "@studio-freight/lenis";
 import { assets } from "../../assets/assets";
 import DropletCanvas from "../DropletCanvas";
+import { Canvas, useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,14 +50,14 @@ const Creativity = () => {
   }, []);
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row items-center justify-center px-6 py-32 sm:px-32 gap-12">
+    <div className="flex flex-col-reverse lg:flex-row items-start justify-start px-6 py-32 sm:px-32 gap-12 relative overflow-hidden">
       {/* Text */}
-      <div className="flex flex-col w-full lg:w-1/2 gap-6 text-center lg:text-left">
+      <div className="flex flex-col w-full lg:w-1/2 gap-6 text-left relative z-10">
         <h1
           ref={(el) => (sectionsRef.current[0] = el)}
-          className="text-2xl sm:text-3xl lg:text-4xl text-center leading-tight reveal-type z-40"
-          data-bg-color="#8e44ad" // initial purple
-          data-fg-color="white" // final white
+          className="text-2xl sm:text-3xl lg:text-4xl leading-tight reveal-type"
+          data-bg-color="#8e44ad"
+          data-fg-color="white"
         >
           <span>Innate creativity</span> stems from meticulous attention to
           detail. At Waru, we don't just produce;{" "}
@@ -65,7 +67,7 @@ const Creativity = () => {
           </span>
         </h1>
 
-        <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
+        <p className="text-sm text-white sm:text-base lg:text-lg leading-relaxed">
           타고난 창의력은, 세밀한 디테일에서 나옵니다 <br />
           저희 와루는 단순 제작이 아닌 <br />
           모든 픽셀에 신경을 써서 <br />
@@ -74,12 +76,12 @@ const Creativity = () => {
         </p>
       </div>
 
-      <div className="hidden md:block w-full lg:w-1/2 flex justify-center">
-        <img
-          src={assets.creativity}
-          alt="Creativity"
-          className="w-full max-w-md lg:max-w-full object-contain"
-        />
+      {/* Droplet Canvas */}
+      <div
+        className="absolute bottom-30 left-0 w-[50%] h-[30vh] 
+             lg:top-0 lg:right-0 lg:left-auto lg:bottom-30 lg:w-[60%] lg:h-full z-0"
+      >
+        <DropletCanvas />
       </div>
     </div>
   );

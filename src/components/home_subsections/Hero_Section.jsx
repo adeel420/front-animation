@@ -32,18 +32,18 @@ const Hero = () => {
         trigger: heroRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: 1,
+        scrub: 2.5, // Changed from 1 to 2.5 for slower response
         pin: true,
       },
     });
 
     scrollTl
-      // Stage 1: WISE and ROOTREE animation
+      // Stage 1: WISE and ROOTREE animation (increased duration)
       .to(wiseRef.current, {
         x: -window.innerWidth / 2 + 50,
-        y: -window.innerHeight / 2 + 50,
+        y: -window.innerHeight / 2 + 100,
         fontSize: "2rem",
-        duration: 1,
+        duration: 2, // Increased from 1 to 2
         ease: "power2.out",
       })
       .to(
@@ -52,31 +52,31 @@ const Hero = () => {
           x: window.innerWidth / 2 - 200,
           y: window.innerHeight / 2 - 100,
           fontSize: "2rem",
-          duration: 1,
+          duration: 2, // Increased from 1 to 2
           ease: "power2.out",
         },
         "<"
       )
-      // Stage 2: Heading fade in and slide
-      .to(headingRef.current, { opacity: 1, duration: 0.5 })
+      // Stage 2: Heading fade in and slide (increased duration)
+      .to(headingRef.current, { opacity: 1, duration: 1 }) // Increased from 0.5 to 1
       .fromTo(
         headingRef.current,
         { x: window.innerWidth },
-        { x: 0, duration: 1, ease: "power2.out" }
+        { x: 0, duration: 2, ease: "power2.out" } // Increased from 1 to 2
       )
-      // Stage 3: Heading out and cards appear
-      .to(headingRef.current, { x: -window.innerWidth, duration: 1 })
-      .to(cardsRef.current, { opacity: 1, duration: 0.1 })
-      .to(cardsRef.current, { x: -400, duration: 1 })
-      .to(cardsRef.current, { x: -800, duration: 1 })
-      .to(cardsRef.current, { x: -1200, duration: 1 });
+      // Stage 3: Heading out and cards appear (increased duration)
+      .to(headingRef.current, { x: -window.innerWidth, duration: 2 }) // Increased from 1 to 2
+      .to(cardsRef.current, { opacity: 1, duration: 0.2 }) // Increased from 0.1 to 0.2
+      .to(cardsRef.current, { x: -400, duration: 2 }) // Increased from 1 to 2
+      .to(cardsRef.current, { x: -800, duration: 2 }) // Increased from 1 to 2
+      .to(cardsRef.current, { x: -1200, duration: 2 }); // Increased from 1 to 2
   }, []);
 
   return (
     <div
       ref={heroRef}
       className="relative overflow-hidden"
-      style={{ height: "170vh" }}
+      style={{ height: "250vh" }} // Increased from 170vh to 250vh for more scroll distance
     >
       <div className="sticky top-0 h-screen flex items-center justify-center text-white bg-black">
         {/* Background */}
