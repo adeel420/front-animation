@@ -14,16 +14,15 @@ const Vision = () => {
     const container = containerRef.current;
     const sections = gsap.utils.toArray(".horizontal-section");
 
-    // Set container width to hold all sections horizontally
+    // Equal widths for each section
     let totalWidth = 0;
-    sections.forEach((section, index) => {
-      gsap.set(section, { width: "100vw" }); // All sections same width
+    sections.forEach(() => {
       totalWidth += window.innerWidth;
     });
 
     gsap.set(container, { width: totalWidth + "px", display: "flex" });
 
-    // Horizontal scroll for the entire container
+    // Horizontal scroll effect
     gsap.to(container, {
       x: () => -(container.scrollWidth - window.innerWidth),
       ease: "none",
@@ -37,14 +36,14 @@ const Vision = () => {
       },
     });
 
-    // Horizontal scrolling for small cards in 3rd section (optional subtle movement)
+    // Subtle movement for 3rd section cards
     const thirdSectionCards = thirdCardsRef.current;
     if (thirdSectionCards) {
       gsap.fromTo(
         thirdSectionCards,
         { x: 0 },
         {
-          x: -50, // subtle left movement
+          x: -50,
           ease: "none",
           scrollTrigger: {
             trigger: thirdSectionCards.parentNode,
@@ -69,61 +68,62 @@ const Vision = () => {
         <div className="horizontal-section flex-shrink-0 w-screen h-screen relative">
           <img
             src={assets.creativityBg}
+            alt="creativity"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center gap-2 md:gap-4 px-4">
-            <span className="text-lg sm:text-2xl md:text-3xl lg:text-5xl font-bold">
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center gap-2 sm:gap-4 px-4">
+            <span className="text-base sm:text-xl md:text-3xl lg:text-5xl font-bold leading-snug">
               디자인은 메세지를 담고
             </span>
-            <span className="text-lg sm:text-2xl md:text-3xl lg:text-5xl font-bold">
+            <span className="text-base sm:text-xl md:text-3xl lg:text-5xl font-bold leading-snug">
               마케팅은 고객의
             </span>
-            <span className="text-lg sm:text-2xl md:text-3xl lg:text-5xl font-bold">
+            <span className="text-base sm:text-xl md:text-3xl lg:text-5xl font-bold leading-snug">
               마음을 움직입니다
             </span>
           </div>
         </div>
+
         {/* 2nd Section */}
         <div
-          className="horizontal-section flex-shrink-0 h-screen flex items-center justify-center px-4 sm:px-8 lg:px-16 relative"
+          className="horizontal-section flex-shrink-0 w-screen h-screen relative flex items-center justify-center"
           style={{
             backgroundImage: `url(${assets.creativityBg})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div className="flex w-full h-full items-center justify-center gap-16">
-            <div className="flex-1 flex flex-col justify-center items-center text-center text-white px-4 sm:px-8">
-              <span className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold">
-                PLANT YOUR VISION
-              </span>
-              <span className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold">
-                BEHIND EACH PIXEL
-              </span>
-            </div>
+          <div className="flex flex-col items-center justify-center text-white text-center px-4 sm:px-8">
+            <span className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold">
+              PLANT YOUR VISION
+            </span>
+            <span className="text-sm sm:text-lg md:text-2xl lg:text-4xl font-bold">
+              BEHIND EACH PIXEL
+            </span>
           </div>
         </div>
-        {/* 3rd Section */} {/* 3rd Section */}
-        <div
-          className="horizontal-section flex-shrink-0 h-screen flex flex-col items-center justify-center px-8 relative"
-          style={{
-            backgroundColor: "black",
-          }}
-        >
+
+        {/* 3rd Section */}
+        <div className="ml-12 md:ml-0 horizontal-section flex-shrink-0 h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-12 lg:px-20 relative bg-black">
           <div
-            className="flex gap-6 mb-8 overflow-x-auto"
+            className="flex gap-4 sm:gap-6 md:gap-8 overflow-x-auto max-w-full pb-6 scrollbar-thin scrollbar-thumb-gray-600"
             id="third-section-cards"
             ref={thirdCardsRef}
           >
             {visionData.map((data) => (
               <div
                 key={data.id}
-                className="w-[200px] h-[200px] bg-black rounded-xl flex flex-col items-center justify-center p-4 text-white overflow-hidden"
+                className="w-[140px] sm:w-[180px] md:w-[220px] lg:w-[260px] 
+                           h-[160px] sm:h-[200px] md:h-[240px] lg:h-[280px] 
+                           bg-gradient-to-b from-gray-900 to-black 
+                           rounded-2xl flex flex-col items-center justify-center 
+                           p-3 sm:p-4 md:p-6 
+                           text-white shadow-lg"
               >
-                <h1 className="font-bold text-sm sm:text-base md:text-lg text-center break-words">
+                <h1 className="font-bold text-xs sm:text-sm md:text-base lg:text-lg text-center mb-2">
                   {data.title}
                 </h1>
-                <p className="text-xs sm:text-sm md:text-base text-gray-300 text-center break-words">
+                <p className="text-[10px] sm:text-xs md:text-sm lg:text-base text-gray-300 text-center leading-snug">
                   {data.desc}
                 </p>
               </div>

@@ -3,10 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
 import Lenis from "@studio-freight/lenis";
-import { assets } from "../../assets/assets";
 import DropletCanvas from "../DropletCanvas";
-import { Canvas, useFrame } from "@react-three/fiber";
-import * as THREE from "three";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,8 +14,8 @@ const Creativity = () => {
     // Animate each ".reveal-type" element
     sectionsRef.current.forEach((el) => {
       if (!el) return;
-      const bg = el.dataset.bgColor || "#8e44ad"; // initial color
-      const fg = el.dataset.fgColor || "white"; // final color on scroll
+      const bg = el.dataset.bgColor || "#8e44ad";
+      const fg = el.dataset.fgColor || "white";
 
       const splitText = new SplitType(el, { types: "chars" });
 
@@ -40,7 +37,7 @@ const Creativity = () => {
       );
     });
 
-    // Initialize Lenis smooth scrolling
+    // Lenis smooth scroll
     const lenis = new Lenis();
     function raf(time) {
       lenis.raf(time);
@@ -50,12 +47,12 @@ const Creativity = () => {
   }, []);
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row items-start justify-start px-6 py-32 sm:px-32 gap-12 relative overflow-hidden">
-      {/* Text */}
+    <div className="flex flex-col-reverse lg:flex-row items-start justify-start px-4 sm:px-8 md:px-16 lg:px-32 py-16 sm:py-24 md:py-32 gap-6 sm:gap-10 lg:gap-12 relative overflow-hidden">
+      {/* Text Section */}
       <div className="flex flex-col w-full lg:w-1/2 gap-6 text-left relative z-10">
         <h1
           ref={(el) => (sectionsRef.current[0] = el)}
-          className="text-2xl sm:text-3xl lg:text-4xl leading-tight reveal-type"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-tight reveal-type"
           data-bg-color="#8e44ad"
           data-fg-color="white"
         >
@@ -67,7 +64,7 @@ const Creativity = () => {
           </span>
         </h1>
 
-        <p className="text-sm text-white sm:text-base lg:text-lg leading-relaxed">
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white leading-relaxed">
           타고난 창의력은, 세밀한 디테일에서 나옵니다 <br />
           저희 와루는 단순 제작이 아닌 <br />
           모든 픽셀에 신경을 써서 <br />
@@ -76,22 +73,23 @@ const Creativity = () => {
         </p>
       </div>
 
+      {/* Droplet Canvas Background */}
       <div
         className="
-    absolute 
-    bottom-30 
-    left-0 
-    right-auto 
-    w-full h-[70vh] 
+          absolute 
+          bottom-0 
+          left-0 
+          right-0 
+          w-full h-[40vh] sm:h-[50vh] md:h-[60vh] 
 
-    lg:top-[-50px]   
-    lg:right-0 
-    lg:left-auto 
-    lg:bottom-auto  
-    lg:w-[90%] 
-    lg:h-full 
-    z-0
-  "
+          lg:top-[-50px]   
+          lg:right-0 
+          lg:left-auto 
+          lg:bottom-auto  
+          lg:w-[90%] 
+          lg:h-full 
+          z-0
+        "
       >
         <DropletCanvas />
       </div>

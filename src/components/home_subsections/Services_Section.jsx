@@ -38,26 +38,26 @@ const Services_Section = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black px-8 md:px-16 lg:px-24 py-32">
+    <div className="min-h-screen relative overflow-hidden bg-black px-6 sm:px-12 md:px-16 lg:px-24 py-16 sm:py-24 md:py-32">
       {/* Top right Korean text */}
-      <div className="absolute top-8 right-8 text-right text-white text-sm leading-relaxed max-w-xs z-20">
+      <div className="absolute top-4 sm:top-6 md:top-8 right-4 sm:right-6 md:right-8 text-right text-white text-xs sm:text-sm md:text-base leading-relaxed max-w-[220px] sm:max-w-xs z-20">
         <p>다양한 시각과 전략으로</p>
-        <p>당신의 브랜드를 뿌리부터 열매가 </p>
+        <p>당신의 브랜드를 뿌리부터 열매가</p>
         <p>열릴때까지 함께 성장시키는 와루입니다.</p>
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col justify-center space-y-12 md:space-y-16">
+      <div className="relative z-10 mt-8 md:mt-0 flex flex-col justify-center space-y-10 sm:space-y-12 md:space-y-16">
         {services.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4 text-left"
             ref={(el) => (itemsRef.current[index] = el)}
+            className="flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-4 md:gap-6 text-left"
           >
-            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white">
+            <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-6xl font-light text-white text-center sm:text-left">
               {item.eng}
             </h2>
-            <span className="text-base sm:text-lg text-white/70">
+            <span className="text-sm sm:text-base md:text-lg lg:text-xl text-white/70 text-center sm:text-left">
               {item.kor}
             </span>
           </div>
