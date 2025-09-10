@@ -117,7 +117,7 @@ const Hero = () => {
     <div
       ref={heroRef}
       className="relative overflow-hidden"
-      style={{ height: "300vh" }} // increased from 120vh to 300vh for more scroll distance
+      style={{ height: "180vh" }} // increased from 120vh to 300vh for more scroll distance
     >
       <div className="sticky top-0 h-screen flex items-center justify-center text-white bg-black">
         {/* Background */}
