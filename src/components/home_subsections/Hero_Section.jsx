@@ -2,186 +2,148 @@ import React, { useEffect, useRef } from "react";
 import DarkVeil from "../../animations/DarkVeil";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { cardsData } from "../../data/Data";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
-  const heroRef = useRef(null);
+  const containerRef = useRef(null);
   const wiseRef = useRef(null);
   const rootreeRef = useRef(null);
-  const headingRef = useRef(null);
-  const cardsRef = useRef(null);
+  const wrapperRef = useRef(null);
 
   useEffect(() => {
-    const updateAnimations = () => {
-      const ww = window.innerWidth;
-      const wh = window.innerHeight;
-      const isMobile = ww < 640;
+    const ww = window.innerWidth;
+    const wh = window.innerHeight;
+    const isMobile = ww < 640;
+    const spacing = isMobile ? 100 : ww < 1024 ? 200 : 350; // 👈 responsive gap
 
-      // Mobile-friendly spacing - add proper gap between words
-      const spacing = isMobile ? 85 : 250;
+    // Reset
+    gsap.set([wiseRef.current, rootreeRef.current], { clearProps: "all" });
 
-      gsap.set([wiseRef.current, rootreeRef.current], { clearProps: "all" });
+    // Initial positions (centered with gap)
+    gsap.set(wiseRef.current, {
+      x: -spacing / 2,
+      y: 0,
+      fontSize: isMobile ? "1.5rem" : ww < 1024 ? "3rem" : "5rem",
+    });
+    gsap.set(rootreeRef.current, {
+      x: spacing / 2,
+      y: 0,
+      fontSize: isMobile ? "1.5rem" : ww < 1024 ? "3rem" : "5rem",
+    });
 
-      // Initial positions - single line on mobile
-      gsap.set(wiseRef.current, {
-        x: -spacing / 2,
-        y: 0, // same line for mobile and desktop
-        fontSize: isMobile ? "1.8rem" : "5rem",
-      });
-      gsap.set(rootreeRef.current, {
-        x: spacing / 2,
-        y: 0, // same line for mobile and desktop
-        fontSize: isMobile ? "1.8rem" : "5rem",
-      });
+    // Horizontal scrolling total width
+    const totalWidth = wrapperRef.current.scrollWidth;
 
-      // Timeline
-      const scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.3, // smooth scroll scrub
-          pin: true,
-        },
-      });
+    // Master timeline
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "+=" + (totalWidth + 1000),
+        scrub: 1,
+        pin: true,
+      },
+    });
 
-      scrollTl
-        // Stage 1: WISE + ROOTREE
-        .to(wiseRef.current, {
-          x: isMobile ? -ww / 2 + 40 : -ww / 2 + 40,
-          y: isMobile ? -wh / 2 + 80 : -wh / 2 + 80,
-          fontSize: isMobile ? "1rem" : "2rem",
-          duration: 16, // was 2 → now 8x slower
-          ease: "power2.out",
-        })
-        .to(
-          rootreeRef.current,
-          {
-            x: isMobile ? ww / 2 - 120 : ww / 2 - 200,
-            y: isMobile ? wh / 2 - 80 : wh / 2 - 100,
-            fontSize: isMobile ? "1rem" : "2rem",
-            duration: 16, // was 2 → now 8x slower
-            ease: "power2.out",
-          },
-          "<"
-        )
-        // Stage 2: Heading - Made smoother with power1.out ease
-        .to(headingRef.current, { opacity: 1, duration: 5 }) // thoda visible rakha
-        .fromTo(
-          headingRef.current,
-          { x: ww },
-          { x: 0, duration: 24, ease: "power1.out" } // changed to power1.out for smoother movement
-        )
-        .to(headingRef.current, { x: -ww, duration: 24, ease: "power1.out" }) // added smooth ease
-        // Stage 3: Cards - Made 5 times slower with smooth easing
-        .fromTo(
-          cardsRef.current,
-          { x: ww },
-          { x: 0, duration: 120, ease: "power1.out" }
-        ) // added smooth ease
-        .to(cardsRef.current, {
-          x: -ww * 0.4,
-          duration: 120,
-          ease: "power1.out",
-        }) // added smooth ease
-        .to(cardsRef.current, {
-          x: -ww * 0.8,
-          duration: 120,
-          ease: "power1.out",
-        }) // added smooth ease
-        .to(cardsRef.current, {
-          x: -ww * 1.2,
-          duration: 120,
-          ease: "power1.out",
-        }); // added smooth ease
-    };
+    // Stage 1: WISE + ROOTREE move to corners
+    tl.to(wiseRef.current, {
+      x: isMobile ? -ww / 2 + 60 : ww < 1024 ? -ww / 2 + 70 : -ww / 2 + 80,
+      y: isMobile ? -wh / 2 + 100 : ww < 1024 ? -wh / 2 + 120 : -wh / 2 + 120,
+      fontSize: isMobile ? "0.9rem" : ww < 1024 ? "1.2rem" : "2rem",
+      duration: 2,
+      ease: "power2.out",
+    }).to(
+      rootreeRef.current,
+      {
+        x: isMobile ? ww / 2 - 100 : ww < 1024 ? ww / 2 - 150 : ww / 2 - 200,
+        y: isMobile ? wh / 2 - 60 : ww < 1024 ? wh / 2 - 80 : wh / 2 - 100,
+        fontSize: isMobile ? "0.9rem" : ww < 1024 ? "1.2rem" : "2rem",
+        duration: 2,
+        ease: "power2.out",
+      },
+      "<"
+    );
 
-    updateAnimations();
+    // Initial off-screen position (wrapper starts outside screen on right)
+    gsap.set(wrapperRef.current, {
+      x: ww,
+    });
 
-    // Refresh on resize
-    const handleResize = () => {
-      ScrollTrigger.refresh();
-      updateAnimations();
-    };
-
-    window.addEventListener("resize", handleResize);
+    // Stage 2: Scroll them into view
+    tl.to(wrapperRef.current, {
+      x: -(totalWidth - ww),
+      duration: 8,
+      ease: "none",
+    });
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+      tl.kill();
     };
   }, []);
 
   return (
     <div
-      ref={heroRef}
-      className="relative overflow-hidden"
-      style={{ height: "180vh" }} // increased from 120vh to 300vh for more scroll distance
+      ref={containerRef}
+      className="relative w-full h-screen overflow-hidden"
     >
-      <div className="sticky top-0 h-screen flex items-center justify-center text-white bg-black">
-        {/* Background */}
-        <div className="absolute inset-0">
-          <DarkVeil />
-        </div>
+      {/* Background */}
+      <div className="absolute inset-0 z-0">
+        <DarkVeil />
+      </div>
 
-        {/* Stage 1: WISE + ROOTREE - Better mobile positioning */}
+      {/* WISE ROOTREE center */}
+      <div
+        className="absolute inset-0 flex items-center justify-center font-bold text-white text-center"
+        style={{ fontFamily: "Abril Fatface" }}
+      >
         <div
-          className="absolute font-bold text-center"
-          style={{ fontFamily: "Abril Fatface" }}
+          ref={wiseRef}
+          className="absolute text-xl sm:text-4xl md:text-6xl lg:text-8xl"
         >
-          <div
-            ref={wiseRef}
-            className="absolute text-2xl sm:text-5xl md:text-7xl lg:text-8xl"
-          >
-            WISE
-          </div>
-          <div
-            ref={rootreeRef}
-            className="absolute text-2xl sm:text-5xl md:text-7xl lg:text-8xl"
-          >
-            ROOTREE
-          </div>
+          WISE
         </div>
-
-        {/* Stage 2: Heading */}
-        <h1
-          ref={headingRef}
-          className="absolute font-bold opacity-0 whitespace-nowrap 
-                 text-lg sm:text-3xl md:text-5xl lg:text-6xl 
-                 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
-        >
-          Projects of Projects
-        </h1>
-
-        {/* Stage 3: Cards */}
         <div
-          ref={cardsRef}
-          className="absolute flex items-center justify-start gap-3 sm:gap-6 md:gap-8 
-                 top-1/2 left-0 transform -translate-y-1/2 px-2 sm:px-4"
-          style={{
-            width: `${
-              cardsData.length * (window.innerWidth < 640 ? 55 : 70)
-            }vw`,
-          }}
+          ref={rootreeRef}
+          className="absolute text-xl sm:text-4xl md:text-6xl lg:text-8xl"
         >
-          {cardsData.map((card, index) => (
-            <div
-              key={index}
-              className="project-card rounded-2xl p-3 sm:p-4 shadow-lg 
-                     h-[240px] w-[260px] sm:h-[220px] sm:w-[240px] 
-                     md:h-[260px] md:w-[300px] 
-                     lg:h-[300px] lg:w-[360px] 
-                     bg-gray-800 flex-shrink-0"
-            >
-              <div className="flex flex-col items-center justify-center h-full">
-                <h1 className="text-white text-xs sm:text-base md:text-lg lg:text-xl">
-                  Project {index + 1}
-                </h1>
-              </div>
-            </div>
-          ))}
+          ROOTREE
         </div>
+      </div>
+
+      {/* Horizontal Scroll Cards */}
+      <div
+        ref={wrapperRef}
+        className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 h-screen px-4 sm:px-8 z-10"
+        style={{
+          width: "max-content", // 👈 width based on content, not fixed
+        }}
+      >
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-red-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 1
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-green-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 2
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-blue-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 3
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 4
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 5
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 6
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 7
+        </section>
+        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
+          Section 8
+        </section>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { assets } from "../../assets/assets";
 
 const labsData = [
@@ -30,7 +30,7 @@ const labsData = [
   {
     id: 6,
     title: "Technology Circuit",
-    img: assets,
+    img: assets.laptop, // fix placeholder
   },
   {
     id: 7,
@@ -55,6 +55,8 @@ const labsData = [
 ];
 
 const Labs = () => {
+  const [isGrid, setIsGrid] = useState(false);
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden relative mt-16">
       {/* Top right logo */}
@@ -62,20 +64,31 @@ const Labs = () => {
         <div className="text-white text-2xl font-bold">W.</div>
       </div>
 
-      {/* Floating cards/images */}
-      <div className="absolute inset-0">
-        {labsData.map((item, index) => (
+      {/* Floating / Grid images */}
+      <div
+        className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+          isGrid
+            ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-8"
+            : ""
+        }`}
+      >
+        {labsData.map((item) => (
           <div
             key={item.id}
-            rel="noopener noreferrer"
-            className={`absolute rounded-lg overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-110`}
-            style={{
-              top: `${Math.random() * 80}%`,
-              left: `${Math.random() * 80}%`,
-              width: `${80 + Math.random() * 120}px`,
-              height: `${60 + Math.random() * 120}px`,
-              rotate: `${Math.floor(Math.random() * 40) - 20}deg`,
-            }}
+            className={`rounded-lg overflow-hidden shadow-lg transform transition-all duration-700 hover:scale-105 ${
+              isGrid ? "relative w-full h-40 rotate-0" : "absolute"
+            }`}
+            style={
+              !isGrid
+                ? {
+                    top: `${Math.random() * 80}%`,
+                    left: `${Math.random() * 80}%`,
+                    width: `${80 + Math.random() * 120}px`,
+                    height: `${60 + Math.random() * 120}px`,
+                    rotate: `${Math.floor(Math.random() * 40) - 20}deg`,
+                  }
+                : {}
+            }
           >
             <img
               src={item.img}
@@ -98,8 +111,11 @@ const Labs = () => {
         </div>
 
         {/* Button */}
-        <button className="rounded-full px-8 py-3 text-white border border-white hover:bg-white hover:text-black transition-colors bg-transparent text-lg md:text-xl">
-          프로젝트 안내
+        <button
+          onClick={() => setIsGrid(!isGrid)}
+          className="rounded-full px-8 py-3 text-white border border-white hover:bg-white hover:text-black transition-colors bg-transparent text-lg md:text-xl"
+        >
+          {isGrid ? "뒤로 가기" : "프로젝트 안내"}
         </button>
       </div>
 
