@@ -28,6 +28,26 @@ export default function Labs() {
     };
   }, [showGallery, scrollEnabled]);
 
+  // ✅ Reset functionality when coming back to section
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!galleryRef.current) return;
+
+      const rect = galleryRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // If section is completely out of view (user scrolled past it)
+      if (rect.bottom < 0) {
+        // Reset everything when user scrolls back up
+        setShowGallery(false);
+        setScrollEnabled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="canvas-container min-h-screen bg-black text-white relative">
       {/* ================= Canvas ================= */}
@@ -45,6 +65,7 @@ export default function Labs() {
               scrollRef={galleryRef}
               setScrollEnabled={setScrollEnabled}
               preview={!showGallery} // Preview me lighter logic
+              reset={!showGallery} // Pass reset prop
             />
           </Suspense>
 
@@ -69,7 +90,7 @@ export default function Labs() {
       )}
 
       {/* ================= Scroll Placeholder ================= */}
-      {showGallery && <div className="h-[60vh]" />}
+      {showGallery && <div className="h-[0vh]" />}
     </div>
   );
 }

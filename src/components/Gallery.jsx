@@ -7,6 +7,7 @@ export default function Gallery({
   scrollRef,
   setScrollEnabled,
   preview = false,
+  reset = false,
 }) {
   const group = useRef();
   const targetZ = useRef(0);
@@ -23,6 +24,18 @@ export default function Gallery({
     assets.sea,
     assets.work,
   ];
+
+  // ✅ Reset gallery position when reset prop changes
+  useEffect(() => {
+    if (reset) {
+      targetZ.current = 0;
+      currentZ.current = 0;
+      setHasScrolled(false);
+      if (group.current) {
+        group.current.position.z = 0;
+      }
+    }
+  }, [reset]);
 
   // ✅ Memoize items so they don't regenerate every render
   const items = useMemo(() => {
