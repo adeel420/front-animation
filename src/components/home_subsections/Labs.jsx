@@ -257,25 +257,6 @@ export default function Labs() {
                     </EffectComposer>
                   </Canvas>
                 </div>
-
-                <div className="text-white text-center mt-4">
-                  Scroll to move through the gallery
-                </div>
-              </div>
-            </div>
-
-            {/* Additional content after gallery */}
-            <div className="relative z-10 min-h-screen flex items-center justify-center px-8 bg-gradient-to-b from-black to-gray-900">
-              <div className="text-center space-y-6 max-w-2xl">
-                <h2 className="text-5xl font-bold text-white mb-4">
-                  Journey Complete
-                </h2>
-                <p className="text-xl text-gray-300">
-                  Thank you for exploring our gallery
-                </p>
-                <Button onClick={() => setShowGallery(false)}>
-                  Back to Home
-                </Button>
               </div>
             </div>
           </>
