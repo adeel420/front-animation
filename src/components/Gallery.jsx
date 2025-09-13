@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useState, useEffect } from "react";
+import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
 import { Image } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { assets } from "../assets/assets";
@@ -15,8 +15,7 @@ export default function Gallery({
 
   const cols = 3;
   const rows = 4;
-  const depth = 6; // Reduced depth for smoother animation
-
+  const depth = 6;
   const images = [
     assets.land,
     assets.laptop,
@@ -25,35 +24,37 @@ export default function Gallery({
     assets.work,
   ];
 
-  const items = [];
-  let i = 0;
-  for (let z = 0; z < depth; z++) {
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        const src = images[i % images.length];
-        items.push({
-          src,
-          x: (x - cols / 2) * 2.5 + (Math.random() - 0.5) * 0.8,
-          y: (y - rows / 1.3) * 2 + (Math.random() - 0.5) * 0.8,
-          z: -z * 2.5 + (Math.random() - 0.5) * 0.5, // Reduced spacing
-        });
-        i++;
+  // ✅ Memoize items so they don't regenerate every render
+  const items = useMemo(() => {
+    const temp = [];
+    let i = 0;
+    for (let z = 0; z < depth; z++) {
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const src = images[i % images.length];
+          temp.push({
+            src,
+            x: (x - cols / 2) * 2.5 + (Math.random() - 0.5) * 0.5, // less randomness → smoother
+            y: (y - rows / 1.3) * 2 + (Math.random() - 0.5) * 0.5,
+            z: -z * 2.5,
+          });
+          i++;
+        }
       }
     }
-  }
+    return temp;
+  }, [cols, rows, depth, images]);
 
-  // Detect when user starts scrolling
+  // ✅ Scroll detection
   useEffect(() => {
-    if (!preview) {
-      const handleScroll = () => {
-        if (!hasScrolled) {
-          setHasScrolled(true);
-        }
-      };
+    if (preview) return;
 
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }
+    const handleScroll = () => {
+      if (!hasScrolled) setHasScrolled(true);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [preview, hasScrolled]);
 
   useFrame(() => {
@@ -62,36 +63,26 @@ export default function Gallery({
     let progress = 0;
 
     if (!preview && scrollRef.current && hasScrolled) {
-      // Improved scroll calculation for smoother transition
       const rect = scrollRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const elementHeight = rect.height;
 
-      // More precise progress calculation
       if (rect.top <= 0 && rect.bottom > windowHeight) {
         const scrollableDistance = elementHeight - windowHeight;
         progress = Math.min(Math.abs(rect.top) / scrollableDistance, 1);
-
-        // Only disable scroll if animation is not complete
-        if (progress < 0.95) {
-          setScrollEnabled(false);
-        } else {
-          // Animation nearly complete, enable scroll for next sections
-          setScrollEnabled(true);
-        }
+        setScrollEnabled(progress >= 0.95);
       } else if (rect.bottom <= windowHeight) {
         progress = 1;
         setScrollEnabled(true);
       } else if (rect.top > 0) {
-        // User scrolled back up
         progress = 0;
         setScrollEnabled(false);
       }
     }
 
-    // Smoother animation with adjusted multiplier
+    // ✅ Smooth LERP animation
     targetZ.current = progress * depth * 2.5;
-    currentZ.current += (targetZ.current - currentZ.current) * 0.08; // Slightly slower for smoothness
+    currentZ.current += (targetZ.current - currentZ.current) * 0.05;
     group.current.position.z = currentZ.current;
   });
 
@@ -103,8 +94,7 @@ export default function Gallery({
             key={i}
             url={item.src}
             position={[item.x, item.y, item.z]}
-            scale={[1.5, 1, 1]}
-            radius={0.2}
+            scale={[1.2, 0.8, 1]} // smaller → faster rendering
           />
         ))}
       </Suspense>

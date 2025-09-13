@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cardsData } from "../../data/Data";
@@ -12,83 +11,93 @@ const Cards = () => {
 
   useEffect(() => {
     if (wrapperRef.current && containerRef.current) {
-      const cards = wrapperRef.current.children;
-      const cardWidth = 340;
-      const gap = 40;
-      const totalWidth = (cards.length - 1) * (cardWidth + gap) + cardWidth;
+      const ww = window.innerWidth;
+      const totalWidth = wrapperRef.current.scrollWidth;
 
-      // Performance optimization
-      gsap.set(wrapperRef.current, {
-        will: "transform",
-        transform: "translateZ(0)", // Force hardware acceleration
-      });
-
-      gsap.to(wrapperRef.current, {
-        x: -(totalWidth - window.innerWidth + 80),
-        ease: "none",
+      // ✅ GSAP Timeline
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: () => "+=" + totalWidth * 0.8, // Reduced multiplier for faster animation
-          scrub: 0.8, // More responsive scrub value
+          end: () => "+=" + (totalWidth - ww),
+          scrub: 0.3, // ✅ thoda smooth scrub (lag kam)
           pin: true,
-          anticipatePin: 1, // Better pin performance
-          invalidateOnRefresh: true, // Handle resize better
-          fastScrollEnd: true, // Better performance on fast scroll
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
         },
       });
 
-      // Cleanup
+      gsap.set(wrapperRef.current, { x: 0 });
+
+      tl.to(wrapperRef.current, {
+        x: -(totalWidth - ww),
+        ease: "power1.out", // ✅ better easing
+      });
+
+      // ✅ Debounced refresh on resize
+      let resizeTimer;
+      const handleResize = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 200);
+      };
+      window.addEventListener("resize", handleResize);
+
       return () => {
+        window.removeEventListener("resize", handleResize);
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       };
     }
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative"
-      style={{ height: "100vh" }} // Reduced height for faster scroll
-    >
+    <div ref={containerRef} className="relative h-[100vh]">
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-        <motion.div
+        <div
           ref={wrapperRef}
-          className="flex items-center gap-10 pl-20"
-          style={{
-            willChange: "transform", // Optimize for animations
-          }}
+          className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 h-screen px-4 sm:px-8 z-10"
+          style={{ width: "max-content" }}
         >
           {cardsData.map((card, index) => (
             <div
               key={index}
-              className="card rounded-2xl p-3 sm:p-4 shadow-lg w-[260px] sm:w-[260px] md:w-[300px] lg:w-[340px] flex-shrink-0 transition-transform duration-300 hover:scale-105"
+              className="rounded-2xl p-3 sm:p-4 w-[260px] md:w-[300px] lg:w-[340px] flex-shrink-0 
+                         transition-transform duration-300 hover:scale-105"
               style={{
-                backfaceVisibility: "hidden", // Prevent flickering
-                transform: "translateZ(0)", // Force hardware acceleration
+                backfaceVisibility: "hidden",
+                transform: "translateZ(0)",
+                willChange: "transform", // ✅ GPU optimization
               }}
             >
-              <div className="bg-[#D9D9D9] rounded-xl overflow-hidden">
+              <div
+                className="bg-[#D9D9D9] rounded-xl overflow-hidden"
+                style={{
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.2)", // ✅ light shadow
+                }}
+              >
                 <img
                   src={card.img}
                   alt={card.title}
-                  className="w-full h-[160px] sm:h-[220px] md:h-[300px] lg:h-[340px] object-cover"
-                  loading="lazy" // Optimize image loading
+                  className="w-full h-[220px] md:h-[300px] lg:h-[340px] object-cover"
+                  loading="lazy"
+                  decoding="async"
                   style={{
                     backfaceVisibility: "hidden",
                     transform: "translateZ(0)",
+                    willChange: "transform",
                   }}
                 />
               </div>
-              <h1 className="font-bold mt-3 sm:mt-4 text-sm sm:text-lg md:text-xl text-white">
+              <h1 className="font-bold mt-3 sm:mt-4 text-lg md:text-xl text-white">
                 {card.title}
               </h1>
-              <p className="text-xs sm:text-sm md:text-base opacity-70 text-gray-300">
+              <p className="text-sm md:text-base opacity-70 text-gray-300">
                 {card.desc}
               </p>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   );
