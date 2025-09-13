@@ -52,7 +52,7 @@ const Cards = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative h-[100vh]">
+    <div ref={containerRef} className="relative h-[150vh]">
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
         <div
           ref={wrapperRef}
