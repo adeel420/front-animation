@@ -1,52 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { IoIosArrowRoundDown, IoIosArrowRoundUp } from "react-icons/io";
 import Iridescence from "../../animations/Iridescence";
 
 const Company_Plant = () => {
-  const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [open3, setOpen3] = useState(false);
-
-  const [selected1, setSelected1] = useState("COMPANY 1");
-  const [selected2, setSelected2] = useState("COMPANY A");
-  const [selected3, setSelected3] = useState("COMPANY X");
+  // ✅ Single state for dropdowns instead of 3 separate useStates
+  const [dropdowns, setDropdowns] = useState({
+    open1: false,
+    open2: false,
+    open3: false,
+    selected1: "COMPANY 1",
+    selected2: "COMPANY A",
+    selected3: "COMPANY X",
+  });
 
   const companies1 = ["COMPANY 1", "COMPANY 2", "COMPANY 3"];
   const companies2 = ["COMPANY A", "COMPANY B", "COMPANY C"];
   const companies3 = ["COMPANY X", "COMPANY Y", "COMPANY Z"];
 
-  const Dropdown = ({ open, setOpen, selected, setSelected, options }) => (
-    <div className="relative w-full">
-      <div
-        className="flex justify-between items-center bg-black px-4 py-3 rounded-lg cursor-pointer"
-        onClick={() => setOpen(!open)}
-      >
-        <span className="text-lg xs:text-xl sm:text-2xl font-semibold">
-          {selected}
-        </span>
-        <span className="text-2xl xs:text-3xl">
-          {open ? <IoIosArrowRoundUp /> : <IoIosArrowRoundDown />}
-        </span>
-      </div>
+  // ✅ Reusable toggle function
+  const toggleDropdown = useCallback((key) => {
+    setDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
 
-      {open && (
-        <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-black border border-white/30 rounded-lg z-20">
-          {options.map((company, i) => (
-            <div
-              key={i}
-              className="px-4 py-2 hover:bg-white/10 cursor-pointer text-lg xs:text-xl sm:text-2xl font-semibold"
-              onClick={() => {
-                setSelected(company);
-                setOpen(false);
-              }}
-            >
-              {company}
-            </div>
-          ))}
+  // ✅ Reusable select function
+  const handleSelect = useCallback((dropdownKey, valueKey, value) => {
+    setDropdowns((prev) => ({
+      ...prev,
+      [dropdownKey]: false, // close dropdown
+      [valueKey]: value, // update selected
+    }));
+  }, []);
+
+  // ✅ Reusable Dropdown Component
+  const Dropdown = ({ openKey, valueKey, options }) => {
+    const open = dropdowns[openKey];
+    const selected = dropdowns[valueKey];
+
+    return (
+      <div className="relative w-full">
+        {/* Dropdown Button */}
+        <div
+          className="flex justify-between items-center bg-black px-4 py-3 rounded-lg cursor-pointer"
+          onClick={() => toggleDropdown(openKey)}
+        >
+          <span className="text-lg xs:text-xl sm:text-2xl font-semibold">
+            {selected}
+          </span>
+          <span className="text-2xl xs:text-3xl">
+            {open ? <IoIosArrowRoundUp /> : <IoIosArrowRoundDown />}
+          </span>
         </div>
-      )}
-    </div>
-  );
+
+        {/* Dropdown Options */}
+        {open && (
+          <div className="absolute left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-black border border-white/30 rounded-lg z-20">
+            {options.map((company, i) => (
+              <div
+                key={i}
+                className="px-4 py-2 hover:bg-white/10 cursor-pointer text-lg xs:text-xl sm:text-2xl font-semibold"
+                onClick={() => handleSelect(openKey, valueKey, company)}
+              >
+                {company}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -57,10 +78,8 @@ const Company_Plant = () => {
             <div className="flex flex-col gap-0.5 xs:gap-1 flex-1">
               <p className="text-xs xs:text-sm">회사소개서 다운로드</p>
               <Dropdown
-                open={open1}
-                setOpen={setOpen1}
-                selected={selected1}
-                setSelected={setSelected1}
+                openKey="open1"
+                valueKey="selected1"
                 options={companies1}
               />
               <p className="text-xs xs:text-sm mt-1">프로젝트 설명입니다.</p>
@@ -72,10 +91,8 @@ const Company_Plant = () => {
             <div className="flex flex-col gap-0.5 xs:gap-1 flex-1">
               <p className="text-xs xs:text-sm">회사소개서 다운로드</p>
               <Dropdown
-                open={open2}
-                setOpen={setOpen2}
-                selected={selected2}
-                setSelected={setSelected2}
+                openKey="open2"
+                valueKey="selected2"
                 options={companies2}
               />
               <p className="text-xs xs:text-sm mt-1">프로젝트 설명입니다.</p>
@@ -88,10 +105,8 @@ const Company_Plant = () => {
           <div className="flex flex-col gap-0.5 xs:gap-1 flex-1">
             <p className="text-xs xs:text-sm">회사소개서 다운로드</p>
             <Dropdown
-              open={open3}
-              setOpen={setOpen3}
-              selected={selected3}
-              setSelected={setSelected3}
+              openKey="open3"
+              valueKey="selected3"
               options={companies3}
             />
             <p className="text-xs xs:text-sm mt-1">프로젝트 설명입니다.</p>
@@ -99,7 +114,7 @@ const Company_Plant = () => {
         </div>
       </div>
 
-      {/* Vision */}
+      {/* Vision Section */}
       <div className="mt-8 xs:mt-10 sm:mt-12 md:mt-16 lg:mt-20 xl:mt-24 text-white relative min-h-[50vh] xs:min-h-[55vh] sm:min-h-[60vh] md:min-h-[65vh] lg:min-h-[70vh] xl:min-h-[75vh] overflow-hidden">
         <Iridescence
           color={[0.5, 0.8, 1]}

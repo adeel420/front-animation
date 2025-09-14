@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useEffect } from "react";
-import { Canvas, useFrame, extend } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 import baseVert from "../shaders/base.vert?raw";
@@ -8,9 +8,9 @@ import outputFrag from "../shaders/output.frag?raw";
 function Droplets() {
   const meshRef = useRef();
   const trailLength = 15;
-  const pointerTrail = useRef(
-    Array.from({ length: trailLength }, () => new THREE.Vector2(0, 0))
-  );
+
+  // ✅ GPU-friendly Float32Array
+  const pointerTrail = useRef(new Float32Array(trailLength * 2));
 
   const uniforms = useMemo(
     () => ({
@@ -23,25 +23,35 @@ function Droplets() {
     []
   );
 
+  // ✅ Resize listener
+  useEffect(() => {
+    const handleResize = () => {
+      uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [uniforms]);
+
+  // ✅ Pointer move → update Float32Array
   useEffect(() => {
     const handleMove = (e) => {
+      // shift old values
       for (let i = trailLength - 1; i > 0; i--) {
-        pointerTrail.current[i].copy(pointerTrail.current[i - 1]);
+        pointerTrail.current[i * 2] = pointerTrail.current[(i - 1) * 2];
+        pointerTrail.current[i * 2 + 1] = pointerTrail.current[(i - 1) * 2 + 1];
       }
-      pointerTrail.current[0].set(
-        (e.clientX / window.innerWidth) * 2 - 1,
-        -(e.clientY / window.innerHeight) * 2 + 1
-      );
+      // set new head
+      pointerTrail.current[0] = (e.clientX / window.innerWidth) * 2 - 1;
+      pointerTrail.current[1] = -(e.clientY / window.innerHeight) * 2 + 1;
     };
 
     window.addEventListener("pointermove", handleMove);
     return () => window.removeEventListener("pointermove", handleMove);
   }, []);
 
+  // ✅ Animate only uTime
   useFrame(({ clock }) => {
-    if (meshRef.current) {
-      uniforms.uTime.value = clock.getElapsedTime();
-    }
+    uniforms.uTime.value = clock.getElapsedTime();
   });
 
   return (
@@ -58,7 +68,12 @@ function Droplets() {
 
 export default function DropletCanvas() {
   return (
-    <Canvas>
+    <Canvas
+      gl={{
+        antialias: false, // ✅ better performance
+        powerPreference: "high-performance",
+      }}
+    >
       <Droplets />
     </Canvas>
   );

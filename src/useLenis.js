@@ -1,24 +1,27 @@
 import { useEffect } from "react";
 import Lenis from "@studio-freight/lenis";
 
-export default function useLenis() {
+export default function useLenis(options = {}) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2, // scroll speed
-      easing: (t) => 1 - Math.pow(1 - t, 3), // smooth easing
+      duration: 1.2, // default scroll speed
+      easing: (t) => 1 - Math.pow(1 - t, 3), // smooth cubic easing
       smoothWheel: true,
       smoothTouch: false,
+      ...options, // ✅ allow customization from outside
     });
 
-    function raf(time) {
+    let frameId;
+    const raf = (time) => {
       lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+      frameId = requestAnimationFrame(raf);
+    };
 
-    requestAnimationFrame(raf);
+    frameId = requestAnimationFrame(raf);
 
     return () => {
-      lenis.destroy();
+      cancelAnimationFrame(frameId); // ✅ cleanup RAF
+      lenis.destroy(); // ✅ cleanup Lenis
     };
-  }, []);
+  }, [options]);
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
@@ -9,15 +9,22 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Creativity = () => {
   const sectionsRef = useRef([]);
+  const lenisRef = useRef(null);
+  const rafId = useRef(null);
+
+  // ✅ Memoized sections list
+  const sectionIndices = useMemo(() => [0], []);
 
   useEffect(() => {
-    // Animate each ".reveal-type" element
+    const splitInstances = [];
+
     sectionsRef.current.forEach((el) => {
       if (!el) return;
       const bg = el.dataset.bgColor || "#8e44ad";
       const fg = el.dataset.fgColor || "white";
 
       const splitText = new SplitType(el, { types: "chars" });
+      splitInstances.push(splitText);
 
       gsap.fromTo(
         splitText.chars,
@@ -37,14 +44,22 @@ const Creativity = () => {
       );
     });
 
-    // Lenis smooth scroll
-    const lenis = new Lenis();
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-  }, []);
+    // ✅ Lenis smooth scroll setup
+    lenisRef.current = new Lenis();
+    const raf = (time) => {
+      lenisRef.current.raf(time);
+      rafId.current = requestAnimationFrame(raf);
+    };
+    rafId.current = requestAnimationFrame(raf);
+
+    // ✅ Cleanup
+    return () => {
+      splitInstances.forEach((instance) => instance.revert());
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+      lenisRef.current = null;
+    };
+  }, [sectionIndices]);
 
   return (
     <div className="flex flex-col-reverse lg:flex-row items-start justify-start px-4 sm:px-8 md:px-16 lg:px-32 py-16 sm:py-24 md:py-32 gap-6 sm:gap-10 lg:gap-12 relative overflow-hidden">
@@ -81,7 +96,6 @@ const Creativity = () => {
           left-0 
           right-0 
           w-full h-[40vh] sm:h-[50vh] md:h-[60vh] 
-
           lg:top-[-50px]   
           lg:right-0 
           lg:left-auto 

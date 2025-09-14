@@ -1,4 +1,11 @@
-import React, { Suspense, useRef, useState, useEffect, useMemo } from "react";
+import React, {
+  Suspense,
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useLayoutEffect,
+} from "react";
 import { Image } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { assets } from "../assets/assets";
@@ -13,31 +20,29 @@ export default function Gallery({
   const targetZ = useRef(0);
   const currentZ = useRef(0);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const lastScrollEnabled = useRef(false); // ✅ track previous value
 
   const cols = 3;
   const rows = 4;
   const depth = 6;
-  const images = [
-    assets.land,
-    assets.laptop,
-    assets.nature,
-    assets.sea,
-    assets.work,
-  ];
 
-  // ✅ Reset gallery position when reset prop changes
-  useEffect(() => {
-    if (reset) {
+  // ✅ Memoize images array so it doesn’t recreate every render
+  const images = useMemo(
+    () => [assets.land, assets.laptop, assets.nature, assets.sea, assets.work],
+    []
+  );
+
+  // ✅ Reset gallery position synchronously
+  useLayoutEffect(() => {
+    if (reset && group.current) {
       targetZ.current = 0;
       currentZ.current = 0;
       setHasScrolled(false);
-      if (group.current) {
-        group.current.position.z = 0;
-      }
+      group.current.position.z = 0;
     }
   }, [reset]);
 
-  // ✅ Memoize items so they don't regenerate every render
+  // ✅ Memoize items (grid of images)
   const items = useMemo(() => {
     const temp = [];
     let i = 0;
@@ -47,8 +52,8 @@ export default function Gallery({
           const src = images[i % images.length];
           temp.push({
             src,
-            x: (x - cols / 2) * 2.5 + (Math.random() - 0.5) * 0.5, // less randomness → smoother
-            y: (y - rows / 1.3) * 2 + (Math.random() - 0.5) * 0.5,
+            x: (x - cols / 2) * 2.5 + (Math.random() - 0.5) * 0.4,
+            y: (y - rows / 1.3) * 2 + (Math.random() - 0.5) * 0.4,
             z: -z * 2.5,
           });
           i++;
@@ -61,11 +66,9 @@ export default function Gallery({
   // ✅ Scroll detection
   useEffect(() => {
     if (preview) return;
-
     const handleScroll = () => {
       if (!hasScrolled) setHasScrolled(true);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [preview, hasScrolled]);
@@ -79,17 +82,14 @@ export default function Gallery({
       const rect = scrollRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const elementHeight = rect.height;
+      const scrollableDistance = elementHeight - windowHeight;
 
       if (rect.top <= 0 && rect.bottom > windowHeight) {
-        const scrollableDistance = elementHeight - windowHeight;
         progress = Math.min(Math.abs(rect.top) / scrollableDistance, 1);
-        setScrollEnabled(progress >= 0.95);
       } else if (rect.bottom <= windowHeight) {
         progress = 1;
-        setScrollEnabled(true);
       } else if (rect.top > 0) {
         progress = 0;
-        setScrollEnabled(false);
       }
     }
 
@@ -97,6 +97,13 @@ export default function Gallery({
     targetZ.current = progress * depth * 2.5;
     currentZ.current += (targetZ.current - currentZ.current) * 0.05;
     group.current.position.z = currentZ.current;
+
+    // ✅ Update scrollEnabled only when value changes
+    const newScrollEnabled = progress >= 0.95;
+    if (newScrollEnabled !== lastScrollEnabled.current) {
+      lastScrollEnabled.current = newScrollEnabled;
+      setScrollEnabled(newScrollEnabled);
+    }
   });
 
   return (
@@ -107,7 +114,7 @@ export default function Gallery({
             key={i}
             url={item.src}
             position={[item.x, item.y, item.z]}
-            scale={[1.2, 0.8, 1]} // smaller → faster rendering
+            scale={[1.2, 0.8, 1]} // ✅ keep small for performance
           />
         ))}
       </Suspense>

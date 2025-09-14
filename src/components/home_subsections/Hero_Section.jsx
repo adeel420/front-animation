@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import DarkVeil from "../../animations/DarkVeil";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,25 +11,31 @@ const Hero = () => {
   const rootreeRef = useRef(null);
   const wrapperRef = useRef(null);
 
-  useEffect(() => {
+  // ✅ Window width/height aur spacing ko memoize kar do
+  const { ww, wh, isMobile, spacing, fontSize } = useMemo(() => {
     const ww = window.innerWidth;
     const wh = window.innerHeight;
     const isMobile = ww < 640;
-    const spacing = isMobile ? 100 : ww < 1024 ? 200 : 350; // 👈 responsive gap
+    const spacing = isMobile ? 100 : ww < 1024 ? 200 : 350;
+    const fontSize = isMobile ? "1.5rem" : ww < 1024 ? "3rem" : "5rem";
 
+    return { ww, wh, isMobile, spacing, fontSize };
+  }, []); // 👈 dependency [] means ye sirf 1 dafa calculate hoga
+
+  useEffect(() => {
     // Reset
     gsap.set([wiseRef.current, rootreeRef.current], { clearProps: "all" });
 
-    // Initial positions (centered with gap)
+    // Initial positions
     gsap.set(wiseRef.current, {
       x: -spacing / 2,
       y: 0,
-      fontSize: isMobile ? "1.5rem" : ww < 1024 ? "3rem" : "5rem",
+      fontSize,
     });
     gsap.set(rootreeRef.current, {
       x: spacing / 2,
       y: 0,
-      fontSize: isMobile ? "1.5rem" : ww < 1024 ? "3rem" : "5rem",
+      fontSize,
     });
 
     // Horizontal scrolling total width
@@ -65,7 +71,7 @@ const Hero = () => {
       "<"
     );
 
-    // Initial off-screen position (wrapper starts outside screen on right)
+    // Initial off-screen position
     gsap.set(wrapperRef.current, {
       x: ww,
     });
@@ -81,7 +87,7 @@ const Hero = () => {
       ScrollTrigger.getAll().forEach((st) => st.kill());
       tl.kill();
     };
-  }, []);
+  }, [spacing, fontSize, ww, wh, isMobile]); // ✅ dependencies memoized values
 
   return (
     <div
@@ -117,33 +123,22 @@ const Hero = () => {
         ref={wrapperRef}
         className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 h-screen px-4 sm:px-8 z-10"
         style={{
-          width: "max-content", // 👈 width based on content, not fixed
+          width: "max-content",
         }}
       >
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-red-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 1
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-green-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 2
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-blue-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 3
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 4
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 5
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 6
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 7
-        </section>
-        <section className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px] flex items-center justify-center bg-purple-400 text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold rounded-xl shadow-lg">
-          Section 8
-        </section>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <section
+            key={i}
+            className="min-w-[250px] sm:min-w-[350px] md:min-w-[450px] lg:min-w-[500px] 
+              h-[200px] sm:h-[250px] md:h-[300px] 
+              flex items-center justify-center 
+              bg-purple-400 text-white 
+              text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
+              font-bold rounded-xl shadow-lg"
+          >
+            Section {i + 1}
+          </section>
+        ))}
       </div>
     </div>
   );

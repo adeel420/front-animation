@@ -5,29 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const Services_Section = () => {
-  const itemsRef = useRef([]);
-
-  useEffect(() => {
-    itemsRef.current.forEach((el) => {
-      if (!el) return;
-
-      gsap.fromTo(
-        el,
-        { x: -100, opacity: 0 }, // start left and invisible
-        {
-          x: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 80%", // trigger when top of element reaches 80% of viewport
-            toggleActions: "play none none reverse", // play on enter, reverse on leave back
-          },
-        }
-      );
-    });
-  }, []);
+  const containerRef = useRef(null);
 
   const services = [
     { eng: "Planning", kor: "기획" },
@@ -37,8 +15,38 @@ const Services_Section = () => {
     { eng: "Marketing", kor: "마케팅" },
   ];
 
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      // ✅ Batch animation for better performance
+      ScrollTrigger.batch(".service-item", {
+        onEnter: (batch) => {
+          gsap.fromTo(
+            batch,
+            { x: -100, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power2.out",
+              stagger: 0.2,
+            }
+          );
+        },
+        onLeaveBack: (batch) => {
+          gsap.to(batch, { x: -100, opacity: 0, duration: 0.5 });
+        },
+        start: "top 80%",
+      });
+    }, containerRef);
+
+    return () => ctx.revert(); // ✅ Cleanup triggers & animations
+  }, []);
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black px-6 sm:px-12 md:px-16 lg:px-24 py-16 sm:py-24 md:py-32">
+    <div
+      ref={containerRef}
+      className="min-h-screen relative overflow-hidden bg-black px-6 sm:px-12 md:px-16 lg:px-24 py-16 sm:py-24 md:py-32"
+    >
       {/* Top right Korean text */}
       <div className="absolute top-4 sm:top-6 md:top-8 right-4 sm:right-6 md:right-8 text-right text-white text-xs sm:text-sm md:text-base leading-relaxed max-w-[220px] sm:max-w-xs z-20">
         <p>다양한 시각과 전략으로</p>
@@ -51,8 +59,7 @@ const Services_Section = () => {
         {services.map((item, index) => (
           <div
             key={index}
-            ref={(el) => (itemsRef.current[index] = el)}
-            className="flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-4 md:gap-6 text-left"
+            className="service-item flex flex-col sm:flex-row items-center sm:items-start gap-1 sm:gap-4 md:gap-6 text-left opacity-0"
           >
             <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-6xl font-light text-white text-center sm:text-left">
               {item.eng}

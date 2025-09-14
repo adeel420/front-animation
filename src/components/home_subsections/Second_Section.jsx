@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
@@ -9,13 +9,18 @@ gsap.registerPlugin(ScrollTrigger);
 const Second_Section = () => {
   const sectionsRef = useRef([]);
 
+  // ✅ Memoize Lenis instance
+  const lenis = useMemo(() => new Lenis(), []);
+
   useEffect(() => {
-    // Animate each ".reveal-type" element
+    // ✅ Animate each ".reveal-type" element only once
     sectionsRef.current.forEach((el) => {
       if (!el) return;
+
       const bg = el.dataset.bgColor || "white";
       const fg = el.dataset.fgColor || "#8e44ad";
 
+      // Split text into characters
       const splitText = new SplitType(el, { types: "chars" });
 
       gsap.fromTo(
@@ -36,14 +41,19 @@ const Second_Section = () => {
       );
     });
 
-    // Initialize Lenis smooth scrolling
-    const lenis = new Lenis();
+    // ✅ Smooth scroll raf loop with cleanup
+    let frame;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      frame = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
-  }, []);
+    frame = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(frame); // cleanup
+      ScrollTrigger.getAll().forEach((st) => st.kill()); // cleanup triggers
+    };
+  }, [lenis]);
 
   return (
     <div className="text-white flex flex-col items-center justify-center px-4 sm:px-8 md:px-16 lg:px-32 py-16 sm:py-24 md:py-32">
