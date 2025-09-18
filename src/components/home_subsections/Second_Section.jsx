@@ -59,7 +59,10 @@ const Second_Section = () => {
     <div className="text-white flex flex-col items-center justify-center px-4 sm:px-8 md:px-16 lg:px-32 py-16 sm:py-24 md:py-32">
       {/* Paragraph */}
       <div className="w-full max-w-[800px] text-center flex flex-col items-center gap-6 justify-center">
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed md:leading-loose opacity-70">
+        <p
+          className="text-base font-regular sm:text-lg md:text-xl lg:text-2xl leading-relaxed md:leading-loose opacity-70"
+          style={{ fontFamily: "Noto Sans KR, sans-serif" }}
+        >
           와루는 트랜드의 흐름을 앞장서 기술들을 개발해 고객들의 비전이 성공할
           수 있도록 지속적으로 노력합니다. 고객님의 성장에 도움이 되고자 각
           분야의 전문가들이 모여 하나의 나무가 되었습니다. 와루는 고객님과 함께,
@@ -72,7 +75,8 @@ const Second_Section = () => {
         <h1
           ref={(el) => (sectionsRef.current[0] = el)}
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 
-                 font-extrabold text-center leading-tight reveal-type"
+                 font-regular text-center leading-tight reveal-type"
+          style={{ fontFamily: "Noto Sans KR, sans-serif" }}
         >
           BEYOND DESIGN AND TECHNOLOGY, <br className="hidden sm:block" /> TO
           MARKETING

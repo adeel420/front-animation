@@ -23,11 +23,19 @@ function Droplets() {
     []
   );
 
-  // ✅ Resize listener
   useEffect(() => {
     const handleResize = () => {
-      uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      uniforms.uResolution.value.set(width, height);
+
+      // Scale plane to maintain aspect ratio
+      if (meshRef.current) {
+        const aspect = width / height;
+        meshRef.current.scale.set(aspect, 1, 1);
+      }
     };
+    handleResize(); // run on mount
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [uniforms]);
@@ -47,6 +55,17 @@ function Droplets() {
 
     window.addEventListener("pointermove", handleMove);
     return () => window.removeEventListener("pointermove", handleMove);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollNorm =
+        window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      pointerTrail.current[1] = 1 - scrollNorm * 2; // -1 to 1 in clip space
+      pointerTrail.current[0] = 0; // center horizontally
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // ✅ Animate only uTime

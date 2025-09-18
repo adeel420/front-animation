@@ -65,7 +65,7 @@ const Footer = () => {
         {/* Large brand name */}
         <div className="text-center mb-6 md:mb-8">
           <h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-regular tracking-tight"
             style={{ fontFamily: "Abril Fatface, serif" }}
           >
             WISEROOTREE
