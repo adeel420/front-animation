@@ -103,7 +103,7 @@ const Creativity = () => {
           w-full h-[40vh] sm:h-[50vh] md:h-[60vh] 
           md:top-[-170px]   
           md:right-[-400px] 
-          md:left-[200px] 
+          md:left-[240px] 
           md:bottom-auto  
           md:w-[100%] 
           md:h-full 

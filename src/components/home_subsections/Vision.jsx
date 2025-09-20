@@ -20,6 +20,7 @@ const Vision = () => {
       first,
       { opacity: 1 },
       {
+        duration: 0.1,
         opacity: 0,
         scrollTrigger: {
           trigger: first,
@@ -35,6 +36,7 @@ const Vision = () => {
       second,
       { opacity: 0 },
       {
+        duration: 0.1,
         opacity: 1,
         scrollTrigger: {
           trigger: first,
