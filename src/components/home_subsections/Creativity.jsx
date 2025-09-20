@@ -74,7 +74,7 @@ const Creativity = () => {
         >
           <span>Innate creativity</span> stems from meticulous attention to
           detail. At Waru, we don't just produce;{" "}
-          <span>
+          <span className="mt-[100px] md:mt-[0] ">
             we pay close attention to every pixel. We'll work with you to
             realize your vision.
           </span>
@@ -97,15 +97,16 @@ const Creativity = () => {
         className="
           absolute 
           bottom-0 
-          left-0 
+          top-20
+          left-30 
           right-0 
           w-full h-[40vh] sm:h-[50vh] md:h-[60vh] 
-          lg:top-[-50px]   
-          lg:right-0 
-          lg:left-auto 
-          lg:bottom-auto  
-          lg:w-[90%] 
-          lg:h-full 
+          md:top-[-170px]   
+          md:right-[-400px] 
+          md:left-[200px] 
+          md:bottom-auto  
+          md:w-[100%] 
+          md:h-full 
           z-0
         "
       >

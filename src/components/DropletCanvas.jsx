@@ -32,7 +32,7 @@ function Droplets() {
       // Scale plane to maintain aspect ratio
       if (meshRef.current) {
         const aspect = width / height;
-        meshRef.current.scale.set(aspect, 1, 1);
+        meshRef.current.scale.set(aspect, 3, 3);
       }
     };
     handleResize(); // run on mount
@@ -75,7 +75,7 @@ function Droplets() {
 
   return (
     <mesh ref={meshRef}>
-      <planeGeometry args={[2, 2]} />
+      <planeGeometry args={[3, 3]} />
       <rawShaderMaterial
         uniforms={uniforms}
         vertexShader={baseVert}
