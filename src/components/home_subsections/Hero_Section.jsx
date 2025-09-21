@@ -19,21 +19,17 @@ const Hero = () => {
     return { ww, wh, isMobile };
   }, []);
 
-  // Intro Animation (runs once on load)
   useEffect(() => {
     const tl = gsap.timeline({ delay: 0.5 });
 
-    // WISE to top-left
-    // WISE to top-left
     tl.to(wiseRef.current, {
-      x: isMobile ? -ww / 2 + 100 : -ww / 2 + 200, // adjust less
+      x: isMobile ? -ww / 2 + 100 : -ww / 2 + 200,
       y: isMobile ? -wh / 2 + 100 : -wh / 2 + 120,
       fontSize: isMobile ? "0.9rem" : ww < 1024 ? "1.2rem" : "2rem",
       duration: 1.2,
       ease: "power3.out",
     });
 
-    // ROOTREE to bottom-right
     tl.to(
       rootreeRef.current,
       {
@@ -46,7 +42,6 @@ const Hero = () => {
       "<"
     );
 
-    // Fade out text
     tl.to(
       [yearRef.current, textRef.current],
       {
@@ -57,62 +52,87 @@ const Hero = () => {
       "-=0.5"
     );
 
-    // Auto slide 1 card into view (no fade, only x movement)
-    tl.to(
-      wrapperRef.current,
+    tl.fromTo(
+      wrapperRef.current.children,
       {
-        x: -(wrapperRef.current.children[0].offsetWidth / 2),
-        duration: 1.5,
-        ease: "power2.inOut",
+        x: "100vw",
+        opacity: 0,
+        scale: 0.8,
+      },
+      {
+        x: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 1.2,
+        ease: "power3.out",
+        stagger: 0.2,
       },
       "-=0.3"
     );
+
+    tl.to(
+      wrapperRef.current,
+      {
+        x: 0,
+        duration: 0.1,
+        ease: "none",
+      },
+      "-=0.1"
+    );
   }, [isMobile, ww, wh]);
 
-  // Scroll animations (for remaining cards + fadeout)
   useEffect(() => {
     lenisRef.current = new Lenis({
-      duration: 2.5,
+      duration: 1.5,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       direction: "vertical",
       gestureDirection: "vertical",
       smooth: true,
-      mouseMultiplier: 0.8,
-      smoothTouch: false,
-      touchMultiplier: 1.5,
+      mouseMultiplier: 1.2,
+      smoothTouch: true,
+      touchMultiplier: 1.2,
       infinite: false,
     });
 
+    let lastProgress = 0;
+
     const handleScroll = (e) => {
       const scrolled = e.scroll;
-      const totalHeight = wh * 10;
+      const totalHeight = wh * 3;
       const progress = Math.min(scrolled / totalHeight, 1);
 
-      // Stage 2: Horizontal scroll (after intro)
-      if (progress > 0.3 && progress <= 0.8) {
-        const stageProgress = (progress - 0.3) / 0.5;
-        const totalWidth = wrapperRef.current?.scrollWidth || 0;
+      if (progress > 0.2 && progress <= 0.85) {
+        const stageProgress = (progress - 0.2) / 0.65;
+        const cardWidth = wrapperRef.current?.children[0]?.offsetWidth || 0;
+        const gap = 24;
+        const totalCardsWidth = (cardWidth + gap) * 8;
+
+        const maxScroll = Math.max(0, totalCardsWidth - ww + gap + cardWidth);
+        const targetX = -gsap.utils.interpolate(0, maxScroll, stageProgress);
 
         gsap.to(wrapperRef.current, {
-          x: gsap.utils.interpolate(
-            -(wrapperRef.current.children[0].offsetWidth + 40), // start after intro
-            -(totalWidth - ww),
-            stageProgress
-          ),
+          x: targetX,
+          duration: 0.1,
+          ease: "none",
+        });
+      } else if (progress <= 0.2) {
+        const reverseProgress = progress / 0.2;
+        gsap.to(wrapperRef.current, {
+          x: gsap.utils.interpolate(0, 0, reverseProgress),
           duration: 0.3,
           ease: "power2.out",
         });
-      }
-
-      // Stage 3: fade out whole section
-      if (progress > 0.8) {
-        const stageProgress = (progress - 0.8) / 0.2;
+      } else if (progress > 0.85) {
+        const exitProgress = (progress - 0.85) / 0.15;
+        const smoothExit = gsap.utils.interpolate(0, 1, exitProgress);
         gsap.to(containerRef.current, {
-          opacity: 1 - stageProgress,
+          y: -wh * smoothExit,
           duration: 0.2,
           ease: "power2.out",
         });
       }
+
+      lastProgress = progress;
     };
 
     lenisRef.current.on("scroll", handleScroll);
@@ -135,12 +155,11 @@ const Hero = () => {
   }, [ww, wh]);
 
   return (
-    <div style={{ height: "1250vh" }}>
+    <div style={{ height: "400vh" }}>
       <div
         ref={containerRef}
         className="fixed top-0 left-0 w-full h-screen overflow-hidden"
       >
-        {/* Background */}
         <div className="absolute inset-0 z-0">
           <DarkVeil />
         </div>
@@ -153,7 +172,6 @@ const Hero = () => {
           @2025
         </p>
 
-        {/* WISE ROOTREE center */}
         <div
           className="absolute inset-0 flex items-center justify-center font-bold text-white text-center"
           style={{ fontFamily: "Abril Fatface, cursive" }}
@@ -174,7 +192,6 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Bottom text */}
         <div
           ref={textRef}
           className="text-white absolute top-[55%] left-[47%] text-xs sm:top-[57%] sm:left-[47%] md:top-[57%] md:left-[47%] md:text-sm lg:left-[48%] lg:top-[60%] lg:text-lg xl:text-xl 2xl:text-2xl"
@@ -183,11 +200,10 @@ const Hero = () => {
           <p>Create it with us</p>
         </div>
 
-        {/* Horizontal Scroll Cards */}
         <div
           ref={wrapperRef}
           className="flex items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 h-screen px-4 sm:px-8 z-10"
-          style={{ width: "max-content", opacity: 1 }} // always visible
+          style={{ width: "max-content", opacity: 1 }}
         >
           {Array.from({ length: 8 }).map((_, i) => (
             <section
