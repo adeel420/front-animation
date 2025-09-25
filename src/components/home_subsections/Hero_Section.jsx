@@ -107,7 +107,6 @@ const Hero = () => {
       const maxScroll = Math.max(0, totalCardsWidth - ww + gap + cardWidth);
 
       if (progress > 0.2 && progress <= 0.85) {
-        // Normal horizontal scroll
         const stageProgress = (progress - 0.2) / 0.65;
         const targetX = -gsap.utils.interpolate(0, maxScroll, stageProgress);
 
@@ -117,30 +116,27 @@ const Hero = () => {
           ease: "power2.out",
         });
 
-        // Ensure container stays visible
+        // ✅ reset Y position while scrolling in stage
         gsap.to(containerRef.current, {
           y: 0,
           duration: 0.2,
           ease: "power2.out",
         });
       } else if (progress <= 0.2) {
-        // Interpolate back smoothly instead of snapping to 0
         const reverseProgress = progress / 0.2;
-        const targetX = -gsap.utils.interpolate(maxScroll, 0, reverseProgress);
-
         gsap.to(wrapperRef.current, {
-          x: targetX,
-          duration: 0.2,
+          x: gsap.utils.interpolate(0, 0, reverseProgress),
+          duration: 0.3,
           ease: "power2.out",
         });
 
+        // ✅ reset Y when at top area
         gsap.to(containerRef.current, {
           y: 0,
           duration: 0.2,
           ease: "power2.out",
         });
       } else if (progress > 0.85) {
-        // Exit stage
         const exitProgress = (progress - 0.85) / 0.15;
         const smoothExit = gsap.utils.interpolate(0, 1, exitProgress);
 
