@@ -50,6 +50,7 @@ const Vision = () => {
 
   return (
     <div
+      data-section="vision"
       className="w-screen h-screen flex items-center justify-center bg-black text-white relative overflow-hidden"
       style={{
         fontFamily: "Noto Sans KR, sans-serif",

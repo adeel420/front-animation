@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect } from "react";
+import React, { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -19,6 +19,7 @@ function Droplets() {
         value: new THREE.Vector2(window.innerWidth, window.innerHeight),
       },
       uPointerTrail: { value: pointerTrail.current },
+      uDropWidth: { value: 0.6 }, // 👈 increased width even more for wider droplets
     }),
     []
   );
@@ -43,12 +44,10 @@ function Droplets() {
   // ✅ Pointer move → update Float32Array
   useEffect(() => {
     const handleMove = (e) => {
-      // shift old values
       for (let i = trailLength - 1; i > 0; i--) {
         pointerTrail.current[i * 2] = pointerTrail.current[(i - 1) * 2];
         pointerTrail.current[i * 2 + 1] = pointerTrail.current[(i - 1) * 2 + 1];
       }
-      // set new head
       pointerTrail.current[0] = (e.clientX / window.innerWidth) * 2 - 1;
       pointerTrail.current[1] = -(e.clientY / window.innerHeight) * 2 + 1;
     };
@@ -86,14 +85,110 @@ function Droplets() {
 }
 
 export default function DropletCanvas() {
+  const canvasRef = useRef();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        ) || window.innerWidth < 768;
+      setIsMobile(isMobileDevice);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // ✅ Mobile scroll follow effect
+  useEffect(() => {
+    if (!isMobile || !canvasRef.current) return;
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+
+      const creativitySection =
+        document.querySelector('[class*="Creativity"]') ||
+        document.querySelector('[data-section="creativity"]');
+      const cardsSection =
+        document.querySelector('[class*="Cards"]') ||
+        document.querySelector('[data-section="cards"]');
+      const visionSection =
+        document.querySelector('[class*="Vision"]') ||
+        document.querySelector('[data-section="vision"]');
+
+      let shouldShow = false;
+      let sectionStart = 0;
+      let sectionEnd = 0;
+
+      [creativitySection, cardsSection, visionSection].forEach((section) => {
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          const sectionTop = scrollY + rect.top;
+          const sectionBottom = sectionTop + section.offsetHeight;
+
+          if (
+            scrollY >= sectionTop - windowHeight &&
+            scrollY <= sectionBottom
+          ) {
+            shouldShow = true;
+            sectionStart = Math.max(sectionStart, sectionTop - windowHeight);
+            sectionEnd = Math.max(sectionEnd, sectionBottom);
+          }
+        }
+      });
+
+      if (!shouldShow) {
+        canvasRef.current.style.opacity = "0";
+        return;
+      }
+
+      canvasRef.current.style.opacity = "1";
+
+      const totalSectionHeight = sectionEnd - sectionStart;
+      const currentPosition = scrollY - sectionStart;
+      const scrollPercent = Math.min(
+        Math.max(currentPosition / totalSectionHeight, 0),
+        1
+      );
+
+      const translateY = scrollPercent * windowHeight * 0.4;
+
+      // ✅ Centered on mobile
+      canvasRef.current.style.transform = `translate(-50%, calc(-50% + ${translateY}px))`;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
   return (
-    <Canvas
-      gl={{
-        antialias: false, // ✅ better performance
-        powerPreference: "high-performance",
+    <div
+      ref={canvasRef}
+      style={{
+        position: isMobile ? "fixed" : "static",
+        top: isMobile ? "30%" : 0,
+        left: isMobile ? "60%" : 0,
+        width: "100%",
+        height: "100vh",
+        pointerEvents: "none",
+        zIndex: isMobile ? -5 : 1000,
+        opacity: 0,
+        transition: isMobile ? "opacity 0.3s ease" : "all 0.3s ease",
+        transform: isMobile ? "translate(-50%, -50%)" : "none", // ✅ start centered
       }}
     >
-      <Droplets />
-    </Canvas>
+      <Canvas
+        gl={{
+          antialias: false,
+          powerPreference: "high-performance",
+        }}
+      >
+        <Droplets />
+      </Canvas>
+    </div>
   );
 }

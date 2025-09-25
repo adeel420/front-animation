@@ -3,22 +3,12 @@ import { Canvas } from "@react-three/fiber";
 import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
 import Gallery from "../Gallery";
 
-// ✅ Reusable button
-const Button = ({ children, className, ...props }) => (
-  <button
-    {...props}
-    className={`bg-transparent border border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-8 py-3 text-lg font-medium rounded-full transition-all duration-300 ${className}`}
-  >
-    {children}
-  </button>
-);
-
 export default function Labs() {
   const [showGallery, setShowGallery] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const galleryRef = useRef();
 
-  // ✅ Memoized canvas settings (so Canvas doesn’t re-render unnecessarily)
+  // ✅ Memoized canvas settings (so Canvas doesn't re-render unnecessarily)
   const canvasSettings = useMemo(
     () => ({
       camera: { position: [0, 0, 5], fov: 50 },
@@ -36,20 +26,36 @@ export default function Labs() {
     };
   }, [showGallery, scrollEnabled]);
 
-  // ✅ Reset when section goes out of view
+  // ✅ Auto-start animation when section comes into view
   useEffect(() => {
-    const handleScroll = () => {
-      if (!galleryRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            // Start animation when 50% of section is visible
+            setShowGallery(true);
+          } else if (!entry.isIntersecting) {
+            // Reset when section goes out of view
+            setShowGallery(false);
+            setScrollEnabled(false);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.5, 1], // Trigger at 0%, 50%, and 100% visibility
+        rootMargin: "0px",
+      }
+    );
 
-      const rect = galleryRef.current.getBoundingClientRect();
-      if (rect.bottom < 0) {
-        setShowGallery(false);
-        setScrollEnabled(false);
+    if (galleryRef.current) {
+      observer.observe(galleryRef.current);
+    }
+
+    return () => {
+      if (galleryRef.current) {
+        observer.unobserve(galleryRef.current);
       }
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -82,13 +88,6 @@ export default function Labs() {
           )}
         </Canvas>
       </div>
-
-      {/* ================= Button ================= */}
-      {!showGallery && (
-        <div className="absolute bottom-20 w-full flex justify-center z-10">
-          <Button onClick={() => setShowGallery(true)}>프로젝트 안내소</Button>
-        </div>
-      )}
 
       {/* ================= Scroll Placeholder ================= */}
       {showGallery && <div className="h-[0vh]" />}

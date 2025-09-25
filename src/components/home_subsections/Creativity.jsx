@@ -62,7 +62,10 @@ const Creativity = () => {
   }, [sectionIndices]);
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row items-start justify-start px-4 sm:px-8 md:px-16 lg:px-32 py-16 sm:py-24 md:py-32 gap-6 sm:gap-10 lg:gap-12 relative overflow-hidden">
+    <div
+      data-section="creativity"
+      className="flex flex-col-reverse lg:flex-row items-start justify-start px-4 sm:px-8 md:px-16 lg:px-32 py-16 sm:py-24 md:py-32 gap-6 sm:gap-10 lg:gap-12 relative overflow-hidden"
+    >
       {/* Text Section */}
       <div className="flex flex-col w-full lg:w-1/2 gap-6 text-left relative z-10">
         <h1
@@ -101,9 +104,9 @@ const Creativity = () => {
           left-30 
           right-0 
           w-full h-[40vh] sm:h-[50vh] md:h-[60vh] 
-          md:top-[-170px]   
+          md:top-[-70px]   
           md:right-[-400px] 
-          md:left-[240px] 
+          md:left-[380px] 
           md:bottom-auto  
           md:w-[100%] 
           md:h-full 

@@ -19,14 +19,13 @@ export default function Gallery({
   const group = useRef();
   const targetZ = useRef(0);
   const currentZ = useRef(0);
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const lastScrollEnabled = useRef(false); // ✅ track previous value
+  const [isActive, setIsActive] = useState(false); // ✅ Changed from hasScrolled to isActive
 
   const cols = 4;
   const rows = 4;
   const depth = 6;
 
-  // ✅ Memoize images array so it doesn’t recreate every render
+  // ✅ Memoize images array so it doesn't recreate every render
   const images = useMemo(
     () => [assets.land, assets.laptop, assets.nature, assets.sea, assets.work],
     []
@@ -37,41 +36,17 @@ export default function Gallery({
     if (reset && group.current) {
       targetZ.current = 0;
       currentZ.current = 0;
-      setHasScrolled(false);
+      setIsActive(false);
       group.current.position.z = 0;
     }
   }, [reset]);
 
-  // ✅ Memoize items (grid of images)
-  // const items = useMemo(() => {
-  //   const temp = [];
-  //   let i = 0;
-  //   for (let z = 0; z < depth; z++) {
-  //     for (let y = 0; y < rows; y++) {
-  //       for (let x = 0; x < cols; x++) {
-  //         const src = images[i % images.length];
-  //         temp.push({
-  //           src,
-  //           x: (x - cols / 2) * 2.5 + (Math.random() - 0.5) * 0.4,
-  //           y: (y - rows / 1.3) * 2 + (Math.random() - 0.5) * 0.4,
-  //           z: -z * 2.5,
-  //         });
-  //         i++;
-  //       }
-  //     }
-  //   }
-  //   return temp;
-  // }, [cols, rows, depth, images]);
-
-  // ✅ Scroll detection
+  // ✅ Auto-activate animation when not in preview mode
   useEffect(() => {
-    if (preview) return;
-    const handleScroll = () => {
-      if (!hasScrolled) setHasScrolled(true);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [preview, hasScrolled]);
+    if (!preview) {
+      setIsActive(true); // ✅ Automatically start animation when gallery becomes active
+    }
+  }, [preview]);
 
   const items = useMemo(() => {
     const temp = [];
@@ -97,7 +72,7 @@ export default function Gallery({
     if (!group.current) return;
 
     let progress = 0;
-    if (!preview && scrollRef.current && hasScrolled) {
+    if (!preview && scrollRef.current && isActive) {
       const rect = scrollRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const elementHeight = rect.height;

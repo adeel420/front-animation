@@ -84,7 +84,7 @@ const Cards = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative h-[100vh]">
+    <div data-section="cards" ref={containerRef} className="relative h-[100vh]">
       <div className="sticky top-0 h-screen flex items-center overflow-hidden">
         <div
           ref={wrapperRef}
