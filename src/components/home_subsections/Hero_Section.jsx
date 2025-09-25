@@ -101,38 +101,55 @@ const Hero = () => {
       const totalHeight = wh * 3;
       const progress = Math.min(scrolled / totalHeight, 1);
 
-      if (progress > 0.2 && progress <= 0.85) {
-        const stageProgress = (progress - 0.2) / 0.65;
-        const cardWidth = wrapperRef.current?.children[0]?.offsetWidth || 0;
-        const gap = 24;
-        const totalCardsWidth = (cardWidth + gap) * 8;
+      const cardWidth = wrapperRef.current?.children[0]?.offsetWidth || 0;
+      const gap = 24;
+      const totalCardsWidth = (cardWidth + gap) * 8;
+      const maxScroll = Math.max(0, totalCardsWidth - ww + gap + cardWidth);
 
-        const maxScroll = Math.max(0, totalCardsWidth - ww + gap + cardWidth);
+      if (progress > 0.2 && progress <= 0.85) {
+        // Normal horizontal scroll
+        const stageProgress = (progress - 0.2) / 0.65;
         const targetX = -gsap.utils.interpolate(0, maxScroll, stageProgress);
 
         gsap.to(wrapperRef.current, {
           x: targetX,
-          duration: 0.1,
-          ease: "none",
+          duration: 0.2,
+          ease: "power2.out",
+        });
+
+        // Ensure container stays visible
+        gsap.to(containerRef.current, {
+          y: 0,
+          duration: 0.2,
+          ease: "power2.out",
         });
       } else if (progress <= 0.2) {
+        // Interpolate back smoothly instead of snapping to 0
         const reverseProgress = progress / 0.2;
+        const targetX = -gsap.utils.interpolate(maxScroll, 0, reverseProgress);
+
         gsap.to(wrapperRef.current, {
-          x: gsap.utils.interpolate(0, 0, reverseProgress),
-          duration: 0.3,
+          x: targetX,
+          duration: 0.2,
+          ease: "power2.out",
+        });
+
+        gsap.to(containerRef.current, {
+          y: 0,
+          duration: 0.2,
           ease: "power2.out",
         });
       } else if (progress > 0.85) {
+        // Exit stage
         const exitProgress = (progress - 0.85) / 0.15;
         const smoothExit = gsap.utils.interpolate(0, 1, exitProgress);
+
         gsap.to(containerRef.current, {
           y: -wh * smoothExit,
           duration: 0.2,
           ease: "power2.out",
         });
       }
-
-      lastProgress = progress;
     };
 
     lenisRef.current.on("scroll", handleScroll);
