@@ -169,16 +169,16 @@ export default function DropletCanvas() {
     <div
       ref={canvasRef}
       style={{
-        position: isMobile ? "fixed" : "static",
-        top: isMobile ? "30%" : 0,
-        left: isMobile ? "60%" : 0,
+        position: isMobile ? "fixed" : "absolute", // ✅ desktop pe bhi absolute
+        top: isMobile ? "30%" : "0",
+        left: isMobile ? "60%" : "0",
         width: "100%",
-        height: "100vh",
+        height: "100%",
         pointerEvents: "none",
-        zIndex: isMobile ? -5 : 1000,
-        opacity: 0,
-        transition: isMobile ? "opacity 0.3s ease" : "all 0.3s ease",
-        transform: isMobile ? "translate(-50%, -50%)" : "none", // ✅ start centered
+        zIndex: isMobile ? -5 : 0, // ✅ desktop pe normal layering
+        opacity: isMobile ? 0 : 1, // ✅ desktop pe always visible
+        transition: isMobile ? "opacity 0.3s ease" : "none",
+        transform: isMobile ? "translate(-50%, -50%)" : "none",
       }}
     >
       <Canvas

@@ -104,9 +104,9 @@ const Creativity = () => {
           left-30 
           right-0 
           w-full h-[40vh] sm:h-[50vh] md:h-[60vh] 
-          md:top-[-70px]   
+          md:top-[-150px]   
           md:right-[-400px] 
-          md:left-[380px] 
+          md:left-[300px] 
           md:bottom-auto  
           md:w-[100%] 
           md:h-full 
