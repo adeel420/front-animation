@@ -70,7 +70,7 @@ const Creativity = () => {
       <div className="flex flex-col w-full lg:w-1/2 gap-6 text-left relative z-10">
         <h1
           ref={(el) => (sectionsRef.current[0] = el)}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-[4xl xl:text-5xl] leading-tight reveal-type font-regular"
+          className="text-lg sm:text-2xl md:text-3xl lg:text-[4xl xl:text-5xl] leading-tight reveal-type font-regular"
           data-bg-color="#8e44ad"
           data-fg-color="white"
           style={{ fontFamily: "Noto Sans KR, sans-serif" }}
@@ -78,7 +78,7 @@ const Creativity = () => {
           <span>Innate creativity</span> stems from meticulous attention to
           detail. At Waru, we don't just produce;{" "}
           <span className="mt-[100px] md:mt-[0] ">
-            we pay close attention to every pixel. We'll work with you to
+            we pay close attention to every <br /> pixel. We'll work with you to
             realize your vision.
           </span>
         </h1>
